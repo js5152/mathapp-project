@@ -1,5 +1,11 @@
 import streamlit as st
+import sys
 import os
+
+# 현재 파일이 있는 폴더를 파이썬 경로에 추가 (경로 꼬임 방지)
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+import random
 from quizgen import basic_formulas as bf
 
 st.set_page_config(page_title="곱셈·인수분해 공식 연습", layout="centered")
