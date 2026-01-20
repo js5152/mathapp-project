@@ -1,5 +1,5 @@
 import random
-from sympy import symbols, expand, latex, Rational, factor, simplify, Integer
+from sympy import symbols, expand, latex, Rational, factor, simplify, Integer, Symbol, Number  # 👈 Symbol, Number 추가
 from sympy.parsing.sympy_parser import (
     parse_expr,
     standard_transformations,
@@ -13,7 +13,15 @@ x, y, a, b = symbols('x y a b')
 variables = [x, a, b]
 
 transformations = standard_transformations + (implicit_multiplication_application,)
-allowed = {"x": x, "y": y, "a": a, "b": b, "Integer": Integer}
+
+# 🚩 채점 시 필요한 단어장에 Symbol과 Number를 추가합니다.
+allowed = {
+    "x": x, "y": y, "a": a, "b": b, 
+    "Integer": Integer, 
+    "Symbol": Symbol, 
+    "Number": Number
+}
+
 
 # -------------------------------
 # 입력 정규화
