@@ -67,21 +67,34 @@ st.progress(progress, text=f"{st.session_state.correct_count}/10 문제 정답")
 # -------------------------------
 # 정답 확인 로직 (버튼 클릭 시 실행)
 # -------------------------------
+# app.py 상단에 random 임포트 확인 (이미 있을 겁니다)
+import random
+
 def check_answer(user_choice):
     if user_choice == problem["latex_answer"]:
+        # ... (정답 로직은 그대로) ...
         st.session_state.correct_count += 1
         st.session_state.wrong_count = 0
-        st.session_state.show_answer = False
         st.session_state.current_problem = make_problem(option)
         st.success("정답입니다! 🎉")
         st.rerun()
     else:
         st.session_state.wrong_count += 1
+        
+        # 🚩 핵심: 오답일 때 현재 문제의 choices 리스트를 다시 섞어버립니다!
+        random.shuffle(st.session_state.current_problem["choices"])
+        
         st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
         
-        # 3번 틀리면 정답 공개 모드로 전환
         if st.session_state.wrong_count >= 3:
             st.session_state.show_answer = True
+        else:
+            # 🚩 3번 미만으로 틀렸을 때 애니메이션(Manim) 보여주는 로직
+            video_path = f"media/{option}.mp4"
+            if os.path.exists(video_path):
+                st.video(video_path)
+            st.warning("애니메이션을 보고 다시 도전해보세요! 보기 순서가 바뀌었습니다.")
+
 
 # -------------------------------
 # UI 구성: 객관식 버튼 또는 정답 공개
