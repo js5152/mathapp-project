@@ -104,6 +104,9 @@ if st.session_state.show_answer:
         st.rerun()
 
 # 2. 일반적인 문제 풀이 상황 (버튼 4개 노출)
+# -------------------------------
+# UI 구성: 객관식 버튼 부분 수정
+# -------------------------------
 else:
     st.write("정답을 고르세요:")
     choices = problem["choices"]
@@ -111,8 +114,13 @@ else:
     # 2x2 레이아웃으로 버튼 배치
     col1, col2 = st.columns(2)
     with col1:
-        if st.button(f"$ {choices[0]} $", key="c0", use_container_width=True): check_answer(choices[0])
-        if st.button(f"$ {choices[1]} $", key="c1", use_container_width=True): check_answer(choices[1])
+        # 🚩 f-string을 사용해서 앞뒤에 $ 표시를 붙여줍니다.
+        if st.button(f"$ {choices[0]} $", key="c0", use_container_width=True): 
+            check_answer(choices[0])
+        if st.button(f"$ {choices[1]} $", key="c1", use_container_width=True): 
+            check_answer(choices[1])
     with col2:
-        if st.button(f"$ {choices[2]} $", key="c2", use_container_width=True): check_answer(choices[2])
-        if st.button(f"$ {choices[3]} $", key="c3", use_container_width=True): check_answer(choices[3])
+        if st.button(f"$ {choices[2]} $", key="c2", use_container_width=True): 
+            check_answer(choices[2])
+        if st.button(f"$ {choices[3]} $", key="c3", use_container_width=True): 
+            check_answer(choices[3])
