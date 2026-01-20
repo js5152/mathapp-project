@@ -107,25 +107,27 @@ if st.session_state.show_answer:
 # -------------------------------
 # UI 구성: 객관식 보기 출력 수정
 # -------------------------------
+# UI 구성: 보기 왼쪽 정렬 버전
+# -------------------------------
 else:
     st.write("정답을 고르세요:")
     choices = problem["choices"]
     
-    # 1. 먼저 보기를 예쁜 수식으로 나열합니다.
-    st.latex(f"① \quad {choices[0]}")
-    st.latex(f"② \quad {choices[1]}")
-    st.latex(f"③ \quad {choices[2]}")
-    st.latex(f"④ \quad {choices[3]}")
+    # 마크다운을 써서 왼쪽 정렬(aligned) 수식을 만듭니다.
+    # r'''...''' 안의 & 기호가 정렬 기준점이 됩니다.
+    st.markdown(f'''
+    $\quad ① \enspace {choices[0]}$  
+    $\quad ② \enspace {choices[1]}$  
+    $\quad ③ \enspace {choices[2]}$  
+    $\quad ④ \enspace {choices[3]}$
+    ''')
     
-    st.write("---") # 구분선
+    st.write("") # 약간의 여백
     
-    # 2. 아래에 번호 버튼만 배치합니다 (모바일에서 누르기 아주 좋습니다)
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        if st.button("①", use_container_width=True): check_answer(choices[0])
-    with col2:
-        if st.button("②", use_container_width=True): check_answer(choices[1])
-    with col3:
-        if st.button("③", use_container_width=True): check_answer(choices[2])
-    with col4:
-        if st.button("④", use_container_width=True): check_answer(choices[3])
+    # 버튼은 아까처럼 번호로 배치
+    cols = st.columns(4)
+    btns = ["①", "②", "③", "④"]
+    for i, col in enumerate(cols):
+        with col:
+            if st.button(btns[i], key=f"btn_{i}", use_container_width=True):
+                check_answer(choices[i])
