@@ -116,10 +116,10 @@ else:
     # 마크다운을 써서 왼쪽 정렬(aligned) 수식을 만듭니다.
     # r'''...''' 안의 & 기호가 정렬 기준점이 됩니다.
     st.markdown(f'''
-    $\quad ① \enspace {choices[0]}$  
-    $\quad ② \enspace {choices[1]}$  
-    $\quad ③ \enspace {choices[2]}$  
-    $\quad ④ \enspace {choices[3]}$
+    $\quad\quad\quad ① \enspace {choices[0]}$  
+    $\quad\quad\quad ② \enspace {choices[1]}$  
+    $\quad\quad\quad ③ \enspace {choices[2]}$  
+    $\quad\quad\quad ④ \enspace {choices[3]}$
     ''')
     
     st.write("") # 약간의 여백
