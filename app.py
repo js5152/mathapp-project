@@ -2,7 +2,7 @@ import streamlit as st
 import sys
 import os
 
-# 현재 파일이 있는 폴더를 파이썬 경로에 추가 (경로 꼬임 방지)
+# 현재 파일이 있는 폴더를 파이썬 경로에 추가
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import random
@@ -58,52 +58,61 @@ if st.session_state.current_type != option:
 # 문제 출력
 # -------------------------------
 problem = st.session_state.current_problem
+st.markdown("### 문제")
 st.latex(problem["latex_question"])
 
-progress = st.session_state.correct_count / 10
+progress = min(st.session_state.correct_count / 10, 1.0)
 st.progress(progress, text=f"{st.session_state.correct_count}/10 문제 정답")
 
 # -------------------------------
-# 정답 공개
+# 정답 확인 로직 (버튼 클릭 시 실행)
 # -------------------------------
+def check_answer(user_choice):
+    if user_choice == problem["latex_answer"]:
+        st.session_state.correct_count += 1
+        st.session_state.wrong_count = 0
+        st.session_state.show_answer = False
+        st.session_state.current_problem = make_problem(option)
+        st.success("정답입니다! 🎉")
+        st.rerun()
+    else:
+        st.session_state.wrong_count += 1
+        st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
+        
+        # 3번 틀리면 정답 공개 모드로 전환
+        if st.session_state.wrong_count >= 3:
+            st.session_state.show_answer = True
+
+# -------------------------------
+# UI 구성: 객관식 버튼 또는 정답 공개
+# -------------------------------
+
+# 1. 3번 틀려서 정답을 보여줘야 하는 상황
 if st.session_state.show_answer:
-    st.info("정답")
-    st.latex(problem["latex_answer"])
+    st.warning("3번 틀렸습니다. 아래 정답을 확인하고 공부하세요.")
+    st.info(f"정답: $ {problem['latex_answer']} $")
+    
+    # 오답 시 비디오 출력
+    video_path = f"media/{option}.mp4"
+    if os.path.exists(video_path):
+        st.video(video_path)
+    
+    if st.button("공부 완료! 다음 문제 풀기", type="primary", use_container_width=True):
+        st.session_state.show_answer = False
+        st.session_state.wrong_count = 0
+        st.session_state.current_problem = make_problem(option)
+        st.rerun()
 
-# -------------------------------
-# 입력 폼
-# -------------------------------
-with st.form("answer_form", clear_on_submit=True):
-    user_input = st.text_input("답안을 입력하세요 (예: b^2-9)")
-    submitted = st.form_submit_button("제출")
-
-    if submitted:
-        is_correct = bf.check_expansion_answer(user_input, problem["answer_obj"])
-
-        if is_correct:
-            st.success("정답입니다!")
-            st.session_state.correct_count += 1
-            st.session_state.wrong_count = 0
-            st.session_state.show_answer = False
-            st.session_state.current_problem = make_problem(option)
-            st.rerun()
-
-        else:
-            st.session_state.wrong_count += 1
-            st.error("오답입니다.")
-
-            video_path = f"media/{option}.mp4"
-            if os.path.exists(video_path):
-                st.video(video_path)
-
-            if st.session_state.wrong_count < 3:
-                st.warning("다시 풀어보세요. 같은 문제가 다시 나옵니다.")
-
-            else:
-                st.warning("3번 틀렸습니다. 정답을 확인하세요.")
-                st.session_state.show_answer = True
-
-                # 다음 문제 예약
-                st.session_state.current_problem = make_problem(option)
-                st.session_state.wrong_count = 0
-                st.rerun()
+# 2. 일반적인 문제 풀이 상황 (버튼 4개 노출)
+else:
+    st.write("정답을 고르세요:")
+    choices = problem["choices"]
+    
+    # 2x2 레이아웃으로 버튼 배치
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button(f"$ {choices[0]} $", key="c0", use_container_width=True): check_answer(choices[0])
+        if st.button(f"$ {choices[1]} $", key="c1", use_container_width=True): check_answer(choices[1])
+    with col2:
+        if st.button(f"$ {choices[2]} $", key="c2", use_container_width=True): check_answer(choices[2])
+        if st.button(f"$ {choices[3]} $", key="c3", use_container_width=True): check_answer(choices[3])
