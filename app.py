@@ -105,22 +105,27 @@ if st.session_state.show_answer:
 
 # 2. 일반적인 문제 풀이 상황 (버튼 4개 노출)
 # -------------------------------
-# UI 구성: 객관식 버튼 부분 수정
+# UI 구성: 객관식 보기 출력 수정
 # -------------------------------
 else:
     st.write("정답을 고르세요:")
     choices = problem["choices"]
     
-    # 2x2 레이아웃으로 버튼 배치
-    col1, col2 = st.columns(2)
+    # 1. 먼저 보기를 예쁜 수식으로 나열합니다.
+    st.latex(f"① \quad {choices[0]}")
+    st.latex(f"② \quad {choices[1]}")
+    st.latex(f"③ \quad {choices[2]}")
+    st.latex(f"④ \quad {choices[3]}")
+    
+    st.write("---") # 구분선
+    
+    # 2. 아래에 번호 버튼만 배치합니다 (모바일에서 누르기 아주 좋습니다)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
-        # 🚩 f-string을 사용해서 앞뒤에 $ 표시를 붙여줍니다.
-        if st.button(f"$ {choices[0]} $", key="c0", use_container_width=True): 
-            check_answer(choices[0])
-        if st.button(f"$ {choices[1]} $", key="c1", use_container_width=True): 
-            check_answer(choices[1])
+        if st.button("①", use_container_width=True): check_answer(choices[0])
     with col2:
-        if st.button(f"$ {choices[2]} $", key="c2", use_container_width=True): 
-            check_answer(choices[2])
-        if st.button(f"$ {choices[3]} $", key="c3", use_container_width=True): 
-            check_answer(choices[3])
+        if st.button("②", use_container_width=True): check_answer(choices[1])
+    with col3:
+        if st.button("③", use_container_width=True): check_answer(choices[2])
+    with col4:
+        if st.button("④", use_container_width=True): check_answer(choices[3])
