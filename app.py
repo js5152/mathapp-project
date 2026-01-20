@@ -69,31 +69,35 @@ st.progress(progress, text=f"{st.session_state.correct_count}/10 문제 정답")
 # -------------------------------
 # app.py 상단에 random 임포트 확인 (이미 있을 겁니다)
 import random
-
 def check_answer(user_choice):
     if user_choice == problem["latex_answer"]:
-        # ... (정답 로직은 그대로) ...
         st.session_state.correct_count += 1
         st.session_state.wrong_count = 0
+        st.session_state.show_answer = False
         st.session_state.current_problem = make_problem(option)
         st.success("정답입니다! 🎉")
         st.rerun()
     else:
         st.session_state.wrong_count += 1
         
-        # 🚩 핵심: 오답일 때 현재 문제의 choices 리스트를 다시 섞어버립니다!
+        # 🚩 오답 시 보기 순서 랜덤하게 다시 섞기
         random.shuffle(st.session_state.current_problem["choices"])
-        
-        st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
         
         if st.session_state.wrong_count >= 3:
             st.session_state.show_answer = True
+            st.rerun() # 3번 틀리면 바로 정답 공개 화면으로
         else:
-            # 🚩 3번 미만으로 틀렸을 때 애니메이션(Manim) 보여주는 로직
-            video_path = f"media/{option}.mp4"
+            # 🚩 여기가 핵심! rerun을 하지 않고 에러 메시지와 영상을 뿌립니다.
+            st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
+            
+            video_path = f"media/{option}.mp4" # 예: media/완전제곱식.mp4
             if os.path.exists(video_path):
                 st.video(video_path)
-            st.warning("애니메이션을 보고 다시 도전해보세요! 보기 순서가 바뀌었습니다.")
+                st.info("💡 위 설명을 보고 다시 한번 정답을 골라보세요!")
+            else:
+                # 영상이 없을 때 대신 나올 메시지
+                st.warning(f"설명 영상({video_path})을 준비 중입니다. 다시 풀어보세요!")
+
 
 
 # -------------------------------
