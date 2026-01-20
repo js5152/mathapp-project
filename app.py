@@ -119,12 +119,12 @@ else:
     $\quad\quad ① \enspace\enspace {choices[0]}$  
 
 
-    $\quad\quae ② \enspace\enspace {choices[1]}$  
+    $\quad\quad ② \enspace\enspace {choices[1]}$  
 
 
     $\quad\quad ③ \enspace\enspace {choices[2]}$  
 
-    
+
     $\quad\quad ④ \enspace\enspace {choices[3]}$
     ''')
     
