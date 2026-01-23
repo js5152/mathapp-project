@@ -52,6 +52,16 @@ if not st.session_state.logged_in:
             st.error("시트 연결 오류: 구글 시트의 [공유] 설정이 '링크가 있는 모든 사용자 - 뷰어'인지 확인해주세요.")
     st.stop() # 로그인 전까지는 아래 코드로 못 넘어감
 
+# --- 사이드바에 로그아웃 버튼 추가 ---
+with st.sidebar:
+    st.write(f"👤 **{st.session_state.user_name}** 학생")
+    if st.button("로그아웃"):
+        st.session_state.logged_in = False
+        st.session_state.user_name = ""
+        st.rerun()
+    st.divider() # 선 하나 그어주기
+
+
 # --- 이 아래부터 기존 문제 풀이 코드 시작 ---
 
 
@@ -111,10 +121,23 @@ st.progress(progress, text=f"{st.session_state.correct_count}/10 문제 정답")
 # -------------------------------
 # 정답 확인 로직 (버튼 클릭 시 실행)
 # -------------------------------
-# app.py 상단에 random 임포트 확인 (이미 있을 겁니다)
-import random
+
+import datetime
+import pandas as pd
+
 def check_answer(user_choice):
+    # 1. 기록을 위한 데이터 수집
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    user_name = st.session_state.user_name
+    problem_type = option
+    
     if user_choice == problem["latex_answer"]:
+        # 정답 시 로그 생성
+        try:
+            new_log = pd.DataFrame([{"timestamp": now, "name": user_name, "type": problem_type, "result": "정답"}])
+            conn.create(worksheet="logs", data=new_log)
+        except: pass
+        
         st.session_state.correct_count += 1
         st.session_state.wrong_count = 0
         st.session_state.show_answer = False
@@ -124,25 +147,25 @@ def check_answer(user_choice):
     else:
         st.session_state.wrong_count += 1
         
-        # 🚩 오답 시 보기 순서 랜덤하게 다시 섞기
+        # 오답 시 로그 생성
+        try:
+            new_log = pd.DataFrame([{"timestamp": now, "name": user_name, "type": problem_type, "result": f"오답({st.session_state.wrong_count}차)"}])
+            conn.create(worksheet="logs", data=new_log)
+        except: pass
+        
         random.shuffle(st.session_state.current_problem["choices"])
         
         if st.session_state.wrong_count >= 3:
             st.session_state.show_answer = True
-            st.rerun() # 3번 틀리면 바로 정답 공개 화면으로
+            st.rerun()
         else:
-            # 🚩 여기가 핵심! rerun을 하지 않고 에러 메시지와 영상을 뿌립니다.
             st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
-            
-            video_path = f"media/{option}.mp4" # 예: media/완전제곱식.mp4
+            video_path = f"media/{option}.mp4"
             if os.path.exists(video_path):
                 st.video(video_path)
                 st.info("💡 위 설명을 보고 다시 한번 정답을 골라보세요!")
             else:
-                # 영상이 없을 때 대신 나올 메시지
                 st.warning(f"설명 영상({video_path})을 준비 중입니다. 다시 풀어보세요!")
-
-
 
 # -------------------------------
 # UI 구성: 객관식 버튼 또는 정답 공개
