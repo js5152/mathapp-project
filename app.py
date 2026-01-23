@@ -11,10 +11,12 @@ from quizgen import basic_formulas as bf
 st.set_page_config(page_title="곱셈·인수분해 공식 연습", layout="centered")
 st.title("곱셈 / 인수분해 공식 연습")
 
-from streamlit_gsheets import GSheetsConnection
+import pandas as pd
 
-# 구글 시트 연결 초기화
-conn = st.connection("gsheets", type=GSheetsConnection)
+# 1. 구글 시트 주소 가공 (Secrets에 넣은 주소 가져오기)
+sheet_url = st.secrets["connections"]["gsheets"]["spreadsheet"]
+# 주소 뒤에 /edit 등이 붙어 있어도 작동하게끔 CSV 전용 주소로 변환합니다.
+csv_url = f"{sheet_url.split('/edit')[0]}/gviz/tq?tqx=out:csv&sheet=users"
 
 # 로그인 상태 관리
 if "logged_in" not in st.session_state:
@@ -29,20 +31,26 @@ if not st.session_state.logged_in:
     input_pw = st.text_input("비밀번호", type="password")
     
     if st.button("로그인"):
-        # 구글 시트에서 명단 읽어오기
-        df = conn.read(worksheet="users")
-        
-        # 일치하는 학생 찾기
-        user_match = df[(df['name'] == input_name) & (df['password'].astype(str) == input_pw)]
-        
-        if not user_match.empty:
-            st.session_state.logged_in = True
-            st.session_state.user_name = input_name
-            st.success(f"{input_name} 학생, 환영합니다!")
-            st.rerun()
-        else:
-            st.error("이름 또는 비밀번호가 틀렸거나 허가되지 않은 학생입니다.")
-    st.stop() # 로그인 안 되면 이후 코드 실행 안 함
+        try:
+            # 2. pandas를 이용해 구글 시트를 직접 읽어오기
+            df = pd.read_csv(csv_url)
+            
+            # 컬럼 이름이 대소문자 섞여있을 수 있으니 정리
+            df.columns = [c.strip().lower() for c in df.columns]
+            
+            # 일치하는 학생 찾기
+            user_match = df[(df['name'] == input_name) & (df['password'].astype(str) == input_pw)]
+            
+            if not user_match.empty:
+                st.session_state.logged_in = True
+                st.session_state.user_name = input_name
+                st.success(f"{input_name} 학생, 환영합니다!")
+                st.rerun()
+            else:
+                st.error("이름 또는 비밀번호가 틀렸습니다.")
+        except Exception as e:
+            st.error("시트 연결 오류: 구글 시트의 [공유] 설정이 '링크가 있는 모든 사용자 - 뷰어'인지 확인해주세요.")
+    st.stop() # 로그인 전까지는 아래 코드로 못 넘어감
 
 # --- 이 아래부터 기존 문제 풀이 코드 시작 ---
 
