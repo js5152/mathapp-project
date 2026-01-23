@@ -11,6 +11,42 @@ from quizgen import basic_formulas as bf
 st.set_page_config(page_title="곱셈·인수분해 공식 연습", layout="centered")
 st.title("곱셈 / 인수분해 공식 연습")
 
+from streamlit_gsheets import GSheetsConnection
+
+# 구글 시트 연결 초기화
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+# 로그인 상태 관리
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "user_name" not in st.session_state:
+    st.session_state.user_name = ""
+
+# --- 로그인 화면 ---
+if not st.session_state.logged_in:
+    st.subheader("학생 로그인")
+    input_name = st.text_input("이름")
+    input_pw = st.text_input("비밀번호", type="password")
+    
+    if st.button("로그인"):
+        # 구글 시트에서 명단 읽어오기
+        df = conn.read(worksheet="users")
+        
+        # 일치하는 학생 찾기
+        user_match = df[(df['name'] == input_name) & (df['password'].astype(str) == input_pw)]
+        
+        if not user_match.empty:
+            st.session_state.logged_in = True
+            st.session_state.user_name = input_name
+            st.success(f"{input_name} 학생, 환영합니다!")
+            st.rerun()
+        else:
+            st.error("이름 또는 비밀번호가 틀렸거나 허가되지 않은 학생입니다.")
+    st.stop() # 로그인 안 되면 이후 코드 실행 안 함
+
+# --- 이 아래부터 기존 문제 풀이 코드 시작 ---
+
+
 # -------------------------------
 # 상태 초기화
 # -------------------------------
