@@ -1,3 +1,6 @@
+import gspread
+from google.oauth2.service_account import Credentials
+
 import streamlit as st
 import sys, os, datetime, re
 import pandas as pd
@@ -40,19 +43,32 @@ def normalize_login_data(value):
     return value
 
 def append_log(result_text):
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    # DataFrame 생성 시 컬럼명을 구글 시트의 헤더와 정확히 일치시킵니다.
-    new_log = pd.DataFrame([{
-        "timestamp": now,
-        "name": st.session_state.user_name,
-        "type": st.session_state.current_type,
-        "result": result_text
-    }])
     try:
-        # 데이터 전송 시 에러가 나면 화면에 표시하여 디버깅할 수 있게 함
-        conn.create(worksheet="logs", data=new_log)
+        # 1. 권한 설정 (secrets에서 직접 가져오기)
+        scope = ["https://www.googleapis.com/auth/spreadsheets"]
+        # secrets.toml의 구조에 따라 st.secrets.connections.gsheets 또는 st.secrets["connections"]["gsheets"] 사용
+        s = st.secrets["connections"]["gsheets"]
+        
+        credentials = Credentials.from_service_account_info({
+            "project_id": s["project_id"],
+            "private_key": s["private_key"],
+            "client_email": s["client_email"],
+            "token_uri": s["token_uri"],
+        }, scopes=scope)
+        
+        # 2. 시트 열기
+        gc = gspread.authorize(credentials)
+        # URL로 직접 열기 (가장 확실함)
+        sh = gc.open_by_url(s["spreadsheet"])
+        worksheet = sh.worksheet("logs")
+        
+        # 3. 데이터 추가 (순서: timestamp, name, type, result)
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        row = [now, st.session_state.user_name, st.session_state.current_type, result_text]
+        worksheet.append_row(row)
+        
     except Exception as e:
-        st.sidebar.error(f"기록 실패: {e}")
+        st.sidebar.error(f"최종 기록 실패: {e}")
 
 def make_problem(option):
     mapping = {
