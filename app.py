@@ -86,7 +86,7 @@ def append_log(result_text):
         st.error(f"로그 저장 실패: {e}")
 
 # -------------------------------
-# 7. 로그인 화면
+# 7. 로그인 화면 (수정 버전)
 # -------------------------------
 if not st.session_state.logged_in:
     st.title("곱셈 / 인수분해 공식 연습")
@@ -108,11 +108,13 @@ if not st.session_state.logged_in:
                 st.stop()
 
             # 값 전처리 컬럼 생성
-            df_users["_name_clean"] = df_users["name"].apply(clean_text)
-            df_users["_pw_clean"] = df_users["password"].apply(clean_text)
+            # 이름은 소문자 + 공백 제거
+            df_users["_name_clean"] = df_users["name"].apply(lambda x: str(x).strip().lower())
+            # 비밀번호는 공백만 제거 (대소문자 유지)
+            df_users["_pw_clean"] = df_users["password"].apply(lambda x: str(x).strip())
 
-            input_name_clean = clean_text(input_name)
-            input_pw_clean = clean_text(input_pw)
+            input_name_clean = str(input_name).strip().lower()
+            input_pw_clean = str(input_pw).strip()
 
             matched = df_users[
                 (df_users["_name_clean"] == input_name_clean) &
