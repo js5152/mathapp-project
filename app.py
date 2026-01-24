@@ -96,16 +96,20 @@ if not st.session_state.logged_in:
     input_pw = st.text_input("비밀번호", type="password")
 
     if st.button("로그인"):
-        try:
-            df_users = conn.read(worksheet="users", ttl=0)
+    try:
+        df_users = conn.read(worksheet="users", ttl=0)
 
-            # 컬럼 전처리
-            df_users.columns = [str(c).strip().lower() for c in df_users.columns]
+        st.write("### DEBUG: 원본 데이터")
+        st.dataframe(df_users)
 
-            # 컬럼 존재 검사
-            if not {"name", "password"} <= set(df_users.columns):
-                st.error("users 시트에 'name', 'password' 컬럼이 있어야 합니다.")
-                st.stop()
+        st.write("### DEBUG: 컬럼명")
+        st.write(df_users.columns.tolist())
+
+        df_users.columns = [str(c) for c in df_users.columns]
+        st.write("### DEBUG: strip/lower 후 컬럼명")
+        st.write([c.strip().lower() for c in df_users.columns])
+
+        st.stop()
 
             # 값 전처리 컬럼 생성
             # 이름은 소문자 + 공백 제거
