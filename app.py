@@ -21,7 +21,9 @@ except ImportError:
 # 2. 구글시트 연결
 # -------------------------------
 try:
-    conn = st.connection("gsheets", type="gspread")
+    from streamlit_gsheets import GSheetsConnection
+    conn = st.connection("gsheets", type=GSheetsConnection)
+
 except Exception as e:
     st.error(f"구글 시트 연결 실패: {e}")
     st.stop()
@@ -69,9 +71,11 @@ def append_log(result_text):
         "result": result_text
     }])
     try:
-        conn.update(worksheet="logs", data=new_log, append=True)
+        # update 대신 create를 사용합니다 (데이터가 아래로 쌓입니다)
+        conn.create(worksheet="logs", data=new_log)
     except Exception as e:
         st.error(f"로그 저장 실패: {e}")
+
 
 # -------------------------------
 # 6. 로그인 UI
