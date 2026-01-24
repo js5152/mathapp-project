@@ -105,11 +105,22 @@ if not st.session_state.logged_in:
             st.write("### DEBUG: 컬럼명")
             st.write(df_users.columns.tolist())
 
-            df_users.columns = [str(c) for c in df_users.columns]
-            st.write("### DEBUG: strip/lower 후 컬럼명")
-            st.write([c.strip().lower() for c in df_users.columns])
+        # 값 전처리
+            df_users["_name_clean"] = df_users["name"].apply(lambda x: str(x).strip().lower())
+            df_users["_pw_clean"]   = df_users["password"].apply(lambda x: str(x).strip())
+   
+            st.write("### DEBUG: 전처리된 값")
+            st.dataframe(df_users[["_name_clean","_pw_clean"]])
+
+        # 입력값도 같이 출력
+            input_name_clean = str(input_name).strip().lower()
+            input_pw_clean   = str(input_pw).strip()
+
+            st.write("### DEBUG: 입력값")
+            st.write({"입력 이름": input_name_clean, "입력 비번": input_pw_clean})
 
             st.stop()
+
 
             # 값 전처리 컬럼 생성
             # 이름은 소문자 + 공백 제거
