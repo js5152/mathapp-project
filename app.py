@@ -97,9 +97,10 @@ if not st.session_state.logged_in:
                 st.error("구글시트에 반드시 'name'과 'password' 컬럼이 있어야 합니다.")
             else:
                 matched = df_users[
-                    (df_users["name"] == input_name) &
-                    (df_users["password"].astype(str) == input_pw)
+                    (df_users["name"].astype(str).str.strip() == input_name.strip()) & 
+                    (df_users["password"].astype(str).str.strip() == input_pw.strip())
                 ]
+            
                 if not matched.empty:
                     st.session_state.logged_in = True
                     st.session_state.user_name = input_name
