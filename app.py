@@ -76,10 +76,15 @@ def make_problem(option):
         "합차공식": bf.generate_type2_expansion,
         "(x+a)(x+b)": bf.generate_type3_expansion,
         "(ax+b)(cx+d)": bf.generate_type4_expansion,
-        "삼차식(세제곱)": bf.generate_type5_cubic_expansion,      # 추가
-        "삼차식(합차변형)": bf.generate_type6_cubic_sum_diff,    # 추가!
+        "삼차식(세제곱)": bf.generate_type5_cubic_expansion,
+        "삼차식(합차변형)": bf.generate_type6_cubic_sum_diff,
+        "항3개제곱": bf.generate_type7_square_trinomial_expansion,
+        "삼차식전개": bf.generate_type8_triple_bracket_expansion,
+        "복이차식꼴": bf.generate_type9_special_quartic_expansion,
+        "세항의삼차공식": bf.generate_type10_long_cubic_expansion,
     }
     return mapping.get(option, lambda: None)()
+
 
 # -------------------------------
 # 3. 상태 초기화
@@ -129,7 +134,7 @@ with st.sidebar:
         st.rerun()
     st.divider()
 
-option = st.selectbox("연습할 공식을 선택하세요:", ("완전제곱식", "합차공식", "(x+a)(x+b)", "(ax+b)(cx+d)", "삼차식(세제곱)", "삼차식(합차변형)"))
+option = st.selectbox("연습할 공식을 선택하세요:", ("완전제곱식", "합차공식", "(x+a)(x+b)", "(ax+b)(cx+d)", "삼차식(세제곱)", "삼차식(합차변형)", "항3개제곱", "삼차식전개", "복이차식꼴", "세항의삼차공식"))
 
 if st.session_state.current_type != option:
     st.session_state.current_type = option

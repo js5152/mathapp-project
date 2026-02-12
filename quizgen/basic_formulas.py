@@ -233,6 +233,70 @@ def generate_type6_cubic_sum_diff():
         "latex_answer": latex(expanded),
         "choices": generate_choices(expanded)
     }
+# -------------------------------
+# 7. 추가 공식 (사진 5, 8, 9, 10번)
+# -------------------------------
+
+# 5번 공식: (a+b+c)^2
+def generate_type7_square_trinomial_expansion():
+    """(a + b + c)^2 전개"""
+    expr = (a + b + x)**2 # 변수는 섞어서 사용 가능
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expr),
+        "answer_obj": expanded,
+        "latex_answer": latex(expanded),
+        "choices": generate_choices(expanded)
+    }
+
+def generate_type7_square_trinomial_factorization():
+    """a^2+b^2+c^2+2ab+2bc+2ca -> (a+b+c)^2 인수분해"""
+    expr = (a + b + x)**2
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expanded),
+        "answer_obj": expr,
+        "latex_answer": latex(expr),
+        "expanded_obj": expanded,
+        "choices": generate_choices(expr)
+    }
+
+# 8번 공식: (x+a)(x+b)(x+c)
+def generate_type8_triple_bracket_expansion():
+    """(x+a)(x+b)(x+c) 전개"""
+    vals = [random.randint(1, 3) for _ in range(3)]
+    expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expr),
+        "answer_obj": expanded,
+        "latex_answer": latex(expanded),
+        "choices": generate_choices(expanded)
+    }
+
+# 9번 공식: (a^2+ab+b^2)(a^2-ab+b^2)
+def generate_type9_special_quartic_expansion():
+    """보기 9번 공식 전개"""
+    expr = (a**2 + a*b + b**2) * (a**2 - a*b + b**2)
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expr),
+        "answer_obj": expanded,
+        "latex_answer": latex(expanded),
+        "choices": generate_choices(expanded)
+    }
+
+# 10번 공식: (a+b+c)(a^2+b^2+c^2-ab-bc-ca)
+def generate_type10_long_cubic_expansion():
+    """보기 10번 공식 전개"""
+    expr = (a + b + x) * (a**2 + b**2 + x**2 - a*b - b*x - x*a)
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expr),
+        "answer_obj": expanded,
+        "latex_answer": latex(expanded),
+        "choices": generate_choices(expanded)
+    }
 
 
 # -------------------------------
