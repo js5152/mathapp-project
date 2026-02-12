@@ -76,6 +76,8 @@ def make_problem(option):
         "합차공식": bf.generate_type2_expansion,
         "(x+a)(x+b)": bf.generate_type3_expansion,
         "(ax+b)(cx+d)": bf.generate_type4_expansion,
+        "삼차식(세제곱)": bf.generate_type5_cubic_expansion,      # 추가
+        "삼차식(합차변형)": bf.generate_type6_cubic_sum_diff,    # 추가!
     }
     return mapping.get(option, lambda: None)()
 
@@ -127,7 +129,7 @@ with st.sidebar:
         st.rerun()
     st.divider()
 
-option = st.selectbox("연습할 공식을 선택하세요:", ("완전제곱식", "합차공식", "(x+a)(x+b)", "(ax+b)(cx+d)"))
+option = st.selectbox("연습할 공식을 선택하세요:", ("완전제곱식", "합차공식", "(x+a)(x+b)", "(ax+b)(cx+d)", "삼차식(세제곱)", "삼차식(합차변형)"))
 
 if st.session_state.current_type != option:
     st.session_state.current_type = option
