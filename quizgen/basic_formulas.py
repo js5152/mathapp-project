@@ -192,6 +192,48 @@ def generate_type4_factorization():
         "expanded_obj": expanded,
         "choices": generate_choices(expr)
     }
+# -------------------------------
+# 5. 삼차식 공식 (a+b)^3 및 (a-b)^3
+# -------------------------------
+def generate_type5_cubic_expansion():
+    """(x + a)^3 또는 (x - a)^3 전개 문제 생성"""
+    var = random.choice([x, a, b]) 
+    a_val = random.randint(1, 3) # 숫자가 커지면 복잡하므로 1~3 권장
+    
+    # + 인자 - 인자 랜덤 결정
+    if random.random() < 0.5:
+        expr = (var + a_val)**3
+    else:
+        expr = (var - a_val)**3
+        
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expr),
+        "answer_obj": expanded,
+        "latex_answer": latex(expanded),
+        "choices": generate_choices(expanded)
+    }
+
+def generate_type6_cubic_sum_diff():
+    """(x + a)(x^2 - ax + a^2) = x^3 + a^3 형태 문제 생성"""
+    var = random.choice([x, a, b])
+    a_val = random.randint(1, 4)
+    
+    if random.random() < 0.5:
+        # x^3 + a^3 공식
+        expr = (var + a_val) * (var**2 - a_val*var + a_val**2)
+    else:
+        # x^3 - a^3 공식
+        expr = (var - a_val) * (var**2 + a_val*var + a_val**2)
+        
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expr),
+        "answer_obj": expanded,
+        "latex_answer": latex(expanded),
+        "choices": generate_choices(expanded)
+    }
+
 
 # -------------------------------
 # 채점 로직
