@@ -1,0 +1,5 @@
+.vscode/
+.Streamlit/
+.Streamlit/secrets.toml
+.DS_Store
+__pycache__/
