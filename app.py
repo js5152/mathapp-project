@@ -183,10 +183,11 @@ if problem:
     
     # LaTeX 정렬 버전입니다.
     st.markdown(f'''
-    $$$\quad\quad ① \enspace\enspace {choices[0]}$$$
-    $$$\quad\quad ② \enspace\enspace {choices[1]}$$$
-    $$$\quad\quad ③ \enspace\enspace {choices[2]}$$$
-    $$$\quad\quad ④ \enspace\enspace {choices[3]}$$$
+    $\quad\quad ① \enspace\enspace {choices[0]}$  \\\\[1em]
+    $\quad\quad ② \enspace\enspace {choices[1]}$  \\\\[1em]
+    $\quad\quad ③ \enspace\enspace {choices[2]}$  \\\\[1em]
+    $\quad\quad ④ \enspace\enspace {choices[3]}$  \\\\[1em]
+    $\quad\quad ⑤ \enspace\enspace {choices[3]}$  
     ''')
     st.write("")
 
@@ -223,10 +224,10 @@ if problem:
             st.rerun()
     else:
         # 일반 버튼 UI
-        cols = st.columns(4)
+        cols = st.columns(5)
         for i, col in enumerate(cols):
             with col:
-                if st.button(f"{['①','②','③','④'][i]}", key=f"btn_{i}", use_container_width=True):
+                if st.button(f"{['①','②','③','④','⑤'][i]}", key=f"btn_{i}", use_container_width=True):
                     handle_answer(choices[i])
         
         # 1~2회 오답 시 힌트와 영상 노출

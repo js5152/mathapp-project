@@ -67,8 +67,8 @@ def generate_choices(correct_obj):
     choices.add(distractor3)
 
     # 4. 부족한 오답 채우기 (4개가 될 때까지)
-    while len(choices) < 4:
-        choices.add(latex(simplify(correct_obj + random.randint(2, 5))))
+    while len(choices) < 5:
+        choices.add(latex(simplify(correct_obj + random.randint(2, 10))))
 
     final_choices = list(choices)
     random.shuffle(final_choices) # 순서 섞기
