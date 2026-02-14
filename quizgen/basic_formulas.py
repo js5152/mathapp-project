@@ -214,6 +214,26 @@ def generate_type5_expansion():
         "choices": generate_choices(expanded)
     }
 
+# ------------------------------
+# 5. 삼차식 공식 인수분해
+# -------------------------------
+def generate_type5_factorization():
+    """x^3 + 3ax^2 + 3a^2x + a^3 -> (x + a)^3 인수분해"""
+    var = random.choice([x, a, b]) 
+    a_val = random.randint(1, 3)
+    if random.random() < 0.5:
+        expr = (var + a_val)**3
+    else:
+        expr = (var - a_val)**3
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expanded),
+        "answer_obj": expr,
+        "latex_answer": latex(expr),
+        "expanded_obj": expanded,
+        "choices": generate_choices(expr)
+    }
+
 def generate_type6_expansion():
     """(x + a)(x^2 - ax + a^2) = x^3 + a^3 형태 문제 생성"""
     var = random.choice([x, a, b])
@@ -234,7 +254,27 @@ def generate_type6_expansion():
         "choices": generate_choices(expanded)
     }
 # -------------------------------
-# 7. 추가 공식 (사진 5, 8, 9, 10번)
+# 6. 삼차식(합차변형) 인수분해
+# -------------------------------
+def generate_type6_factorization():
+    """x^3 + a^3 -> (x + a)(x^2 - ax + a^2) 인수분해"""
+    var = random.choice([x, a, b])
+    a_val = random.randint(1, 4)
+    if random.random() < 0.5:
+        expr = (var + a_val) * (var**2 - a_val*var + a_val**2)
+    else:
+        expr = (var - a_val) * (var**2 + a_val*var + a_val**2)
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expanded),
+        "answer_obj": expr,
+        "latex_answer": latex(expr),
+        "expanded_obj": expanded,
+        "choices": generate_choices(expr)
+    }
+
+# -------------------------------
+# 7. 추가 공식 
 # -------------------------------
 
 # 5번 공식: (a+b+c)^2
@@ -273,6 +313,21 @@ def generate_type8_expansion():
         "latex_answer": latex(expanded),
         "choices": generate_choices(expanded)
     }
+# -------------------------------
+# 8. (x+a)(x+b)(x+c) 인수분해
+# -------------------------------
+def generate_type8_factorization():
+    """x^3 + (a+b+c)x^2 + ... -> (x+a)(x+b)(x+c) 인수분해"""
+    vals = [random.randint(1, 3) for _ in range(3)]
+    expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expanded),
+        "answer_obj": expr,
+        "latex_answer": latex(expr),
+        "expanded_obj": expanded,
+        "choices": generate_choices(expr)
+    }
 
 # 9번 공식: (a^2+ab+b^2)(a^2-ab+b^2)
 def generate_type9_expansion():
@@ -286,6 +341,21 @@ def generate_type9_expansion():
         "choices": generate_choices(expanded)
     }
 
+# -------------------------------
+# 9. 복이차식 꼴 인수분해
+# -------------------------------
+def generate_type9_factorization():
+    """a^4 + a^2b^2 + b^4 -> (a^2+ab+b^2)(a^2-ab+b^2) 인수분해"""
+    expr = (a**2 + a*b + b**2) * (a**2 - a*b + b**2)
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expanded),
+        "answer_obj": expr,
+        "latex_answer": latex(expr),
+        "expanded_obj": expanded,
+        "choices": generate_choices(expr)
+    }
+
 # 10번 공식: (a+b+c)(a^2+b^2+c^2-ab-bc-ca)
 def generate_type10_expansion():
     """보기 10번 공식 전개"""
@@ -296,6 +366,20 @@ def generate_type10_expansion():
         "answer_obj": expanded,
         "latex_answer": latex(expanded),
         "choices": generate_choices(expanded)
+    }
+# -------------------------------
+# 10. 세 항의 삼차공식 인수분해
+# -------------------------------
+def generate_type10_factorization():
+    """a^3+b^3+c^3-3abc -> (a+b+c)(a^2+b^2+c^2-ab-bc-ca) 인수분해"""
+    expr = (a + b + x) * (a**2 + b**2 + x**2 - a*b - b*x - x*a)
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expanded),
+        "answer_obj": expr,
+        "latex_answer": latex(expr),
+        "expanded_obj": expanded,
+        "choices": generate_choices(expr)
     }
 
 
