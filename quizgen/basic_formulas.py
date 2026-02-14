@@ -348,3 +348,4 @@ if __name__ == "__main__":
     print(check_expansion_answer("b^2-9", ans))    # True
     print(check_expansion_answer("b^2−9", ans))    # True
     print(check_expansion_answer("b*b-9", ans))    # True
+

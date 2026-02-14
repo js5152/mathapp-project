@@ -163,7 +163,7 @@ if problem:
     st.write("정답을 고르세요:")
     choices = problem["choices"]
     
-    # 이 부분이 강사님이 원하시던 LaTeX 정렬 버전입니다.
+    # LaTeX 정렬 버전입니다.
     st.markdown(f'''
     $\quad\quad ① \enspace\enspace {choices[0]}$  
     $\quad\quad ② \enspace\enspace {choices[1]}$  
