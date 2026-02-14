@@ -70,22 +70,33 @@ def append_log(result_text):
     except Exception as e:
         st.sidebar.error(f"최종 기록 실패: {e}")
 
-def make_problem(option):
+def make_problem(option, is_factor):
+    # 1. 메뉴 이름과 basic_formulas의 type 번호를 매칭
     mapping = {
-        "완전제곱식": bf.generate_type1_expansion,
-        "합차공식": bf.generate_type2_expansion,
-        "(x+a)(x+b)": bf.generate_type3_expansion,
-        "(ax+b)(cx+d)": bf.generate_type4_expansion,
-        "삼차식(세제곱)": bf.generate_type5_expansion,
-        "삼차식(합차변형)": bf.generate_type6_expansion,
-        "항3개제곱": bf.generate_type7_expansion,
-        "삼차식전개": bf.generate_type8_expansion,
-        "복이차식꼴": bf.generate_type9_expansion,
-        "세항의삼차공식": bf.generate_type10_expansion,
+        "완전제곱식": 1, "합차공식": 2, "(x+a)(x+b)": 3, "(ax+b)(cx+d)": 4,
+        "삼차식(세제곱)": 5, "삼차식(합차변형)": 6, "항3개제곱": 7,
+        "삼차식전개": 8, "복이차식꼴": 9, "세항의삼차공식": 10
     }
-    return mapping.get(option, lambda: None)()
-
-
+    
+    type_num = mapping.get(option)
+    if type_num is None: return None
+    
+    # 2. 체크박스 상태에 따라 접미사 결정
+    mode = "factorization" if is_factor else "expansion"
+    
+    # 3. 함수 이름 조립 (예: generate_type1_expansion)
+    target_func_name = f"generate_type{type_num}_{mode}"
+    
+    # 4. bf 모듈에서 해당 함수가 있는지 확인하고 실행
+    func = getattr(bf, target_func_name, None)
+    
+    if func:
+        return func()
+    else:
+        # 아직 인수분해 함수를 안 만들었을 경우를 대비한 안내
+        st.warning(f"아직 {option}의 인수분해 함수({target_func_name})가 준비되지 않았습니다.")
+        return None
+    
 # -------------------------------
 # 3. 상태 초기화
 # -------------------------------
@@ -133,12 +144,19 @@ with st.sidebar:
         st.session_state.clear()
         st.rerun()
     st.divider()
-
+  # 1)메뉴선택
 option = st.selectbox("연습할 공식을 선택하세요:", ("완전제곱식", "합차공식", "(x+a)(x+b)", "(ax+b)(cx+d)", "삼차식(세제곱)", "삼차식(합차변형)", "항3개제곱", "삼차식전개", "복이차식꼴", "세항의삼차공식"))
+  # 2)인수분해 체크박스 추가
+is_factor = st.checkbox("🧩 인수분해 문제로 풀기 (체크 해제 시 전개 연습)")
 
-if st.session_state.current_type != option:
-    st.session_state.current_type = option
-    st.session_state.current_problem = make_problem(option)
+  # 3)상태 변경 감지 (옵션이 바뀌거나, 체크박스 상태가 바뀌면 문제 새로 생성)
+  # 식별자를 '메뉴이름+체크상태'로 만들어서 변화를 감지합니다.
+current_state_key = f"{option}_{is_factor}"
+
+if st.session_state.current_type != current_state_key:
+    st.session_state.current_type = current_state_key
+    # 이제 make_problem에 is_factor(True/False)를 같이 넘겨줍니다.
+    st.session_state.current_problem = make_problem(option, is_factor)
     st.session_state.correct_count = 0
     st.session_state.wrong_count = 0
     st.session_state.show_answer = False
