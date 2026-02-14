@@ -76,12 +76,12 @@ def make_problem(option):
         "합차공식": bf.generate_type2_expansion,
         "(x+a)(x+b)": bf.generate_type3_expansion,
         "(ax+b)(cx+d)": bf.generate_type4_expansion,
-        "삼차식(세제곱)": bf.generate_type5_cubic_expansion,
-        "삼차식(합차변형)": bf.generate_type6_cubic_sum_diff,
-        "항3개제곱": bf.generate_type7_square_trinomial_expansion,
-        "삼차식전개": bf.generate_type8_triple_bracket_expansion,
-        "복이차식꼴": bf.generate_type9_special_quartic_expansion,
-        "세항의삼차공식": bf.generate_type10_long_cubic_expansion,
+        "삼차식(세제곱)": bf.generate_type5_expansion,
+        "삼차식(합차변형)": bf.generate_type6_expansion,
+        "항3개제곱": bf.generate_type7_expansion,
+        "삼차식전개": bf.generate_type8_expansion,
+        "복이차식꼴": bf.generate_type9_expansion,
+        "세항의삼차공식": bf.generate_type10_expansion,
     }
     return mapping.get(option, lambda: None)()
 
