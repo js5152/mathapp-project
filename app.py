@@ -182,13 +182,15 @@ if problem:
     choices = problem["choices"]
     
     # LaTeX 정렬 버전입니다.
-    st.markdown(f'''
-    $\quad\quad ① \enspace\enspace {choices[0]}$  \\\\[1em]
-    $\quad\quad ② \enspace\enspace {choices[1]}$  \\\\[1em]
-    $\quad\quad ③ \enspace\enspace {choices[2]}$  \\\\[1em]
-    $\quad\quad ④ \enspace\enspace {choices[3]}$  \\\\[1em]
-    $\quad\quad ⑤ \enspace\enspace {choices[3]}$  
-    ''')
+    st.markdown(f"$\quad ① \enspace {choices[0]}$")
+    st.write("")
+    st.markdown(f"$\quad ② \enspace {choices[1]}$")
+    st.write("")
+    st.markdown(f"$\quad ③ \enspace {choices[2]}$")
+    st.write("")
+    st.markdown(f"$\quad ④ \enspace {choices[3]}$")
+    st.write("")
+    st.markdown(f"$\quad ⑤ \enspace {choices[4]}$") # 👈 추가!
     st.write("")
 
     # --- 정답 처리 로직 ---
