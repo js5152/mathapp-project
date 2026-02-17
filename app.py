@@ -199,9 +199,13 @@ if problem:
             append_log("정답")
             st.session_state.correct_count += 1
             st.session_state.wrong_count = 0
-            st.session_state.current_problem = make_problem(option)
+            
+            # 🚩 여기를 수정하세요! (is_factor 추가)
+            st.session_state.current_problem = make_problem(option, is_factor)
+            
             st.success("정답입니다! 🎉")
             st.rerun()
+
         else:
             st.session_state.wrong_count += 1
             append_log(f"오답({st.session_state.wrong_count}차)")
@@ -222,7 +226,7 @@ if problem:
         if st.button("공부 완료! 다음 문제 풀기", type="primary", use_container_width=True):
             st.session_state.show_answer = False
             st.session_state.wrong_count = 0
-            st.session_state.current_problem = make_problem(option)
+            st.session_state.current_problem = make_problem(option, is_factor)
             st.rerun()
     else:
         # 일반 버튼 UI

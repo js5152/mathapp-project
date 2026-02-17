@@ -1,3 +1,5 @@
+# 완전제곱식/합차공식 연습
+
 import random
 from sympy import symbols, expand, latex, Rational
 from sympy.parsing.sympy_parser import (
