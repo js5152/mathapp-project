@@ -218,7 +218,8 @@ if problem:
         st.error(f"오답입니다! (3/3)")
         st.warning(f"정답: $ {problem['latex_answer']} $")
         
-        video_path = f"media/{option}.mp4"
+        mode_name = "인수분해" if is_factor else "전개"
+        video_path = f"media/{mode_name}_{option}.mp4"
         if os.path.exists(video_path):
             st.video(video_path)
             st.info("💡 설명을 보고 '공부 완료' 버튼을 누르세요.")
@@ -239,7 +240,10 @@ if problem:
         # 1~2회 오답 시 힌트와 영상 노출
         if 0 < st.session_state.wrong_count < 3:
             st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
-            video_path = f"media/{option}.mp4"
+
+            mode_name = "인수분해" if is_factor else "전개"
+            video_path = f"media/{mode_name}_{option}.mp4"
+            
             if os.path.exists(video_path):
                 st.video(video_path)
 
