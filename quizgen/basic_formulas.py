@@ -313,10 +313,13 @@ def generate_type7_factorization():
         "choices": generate_choices(expr)
     }
 
-# 8번 공식: (x+a)(x+b)(x+c)
+# -------------------------------
+# 8. (x+a)(x+b)(x+c) 전개 및 인수분해
+# -------------------------------
+
 def generate_type8_expansion():
     """(x+a)(x+b)(x+c) 전개 (중복 없는 숫자)"""
-    pool = [i for i in range(-5, 6) if i != 0] # [-3, -2, -1, 1, 2, 3]
+    pool = [i for i in range(-5, 6) if i != 0]
     vals = random.sample(pool, 3)
     
     expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
@@ -328,13 +331,9 @@ def generate_type8_expansion():
         "choices": generate_choices(expanded)
     }
 
-
-# -------------------------------
-# 8. (x+a)(x+b)(x+c) 인수분해
-# -------------------------------
 def generate_type8_factorization():
-   """음수가 섞인 (x+a)(x+b)(x+c) 인수분해"""
-    pool = [i for i in range(-5, 6) if i != 0] # [-3, -2, -1, 1, 2, 3]
+    """음수가 섞인 (x+a)(x+b)(x+c) 인수분해"""
+    pool = [i for i in range(-5, 6) if i != 0]
     vals = random.sample(pool, 3)
     
     expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
@@ -347,7 +346,6 @@ def generate_type8_factorization():
         "expanded_obj": expanded,
         "choices": generate_choices(expr)
     }
-
 
 # 9번 공식: (a^2+ab+b^2)(a^2-ab+b^2)
 def generate_type9_expansion():
