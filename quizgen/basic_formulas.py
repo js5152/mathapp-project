@@ -9,7 +9,7 @@ from sympy.parsing.sympy_parser import (
 # -------------------------------
 # 기본 설정
 # -------------------------------
-x, y, a, b = symbols('x y a b')
+x, y, z, a, b, c = symbols('x y z a b c')
 variables = [x, a, b]
 
 transformations = standard_transformations + (implicit_multiplication_application,)
@@ -314,19 +314,22 @@ def generate_type7_factorization():
     }
 
 # 8번 공식: (x+a)(x+b)(x+c)
-def generate_type8_expansion():
-    """(x+a)(x+b)(x+c) 전개 (중복 없는 숫자)"""
-    # 1~9 사이의 숫자 중 '중복 없이' 3개를 한꺼번에 뽑습니다.
-    vals = random.sample(range(1, 10), 3) 
+def generate_type8_factorization():
+    """음수가 섞인 (x+a)(x+b)(x+c) 인수분해"""
+    pool = [i for i in range(-5, 6) if i != 0] # [-3, -2, -1, 1, 2, 3]
+    vals = random.sample(pool, 3)
     
     expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
     expanded = expand(expr)
+    
     return {
-        "latex_question": latex(expr),
-        "answer_obj": expanded,
-        "latex_answer": latex(expanded),
-        "choices": generate_choices(expanded)
+        "latex_question": latex(expanded),
+        "answer_obj": expr,
+        "latex_answer": latex(expr),
+        "expanded_obj": expanded,
+        "choices": generate_choices(expr)
     }
+
 
 # -------------------------------
 # 8. (x+a)(x+b)(x+c) 인수분해
