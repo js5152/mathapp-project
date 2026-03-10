@@ -314,7 +314,7 @@ def generate_type7_factorization():
     }
 
 # 8번 공식: (x+a)(x+b)(x+c)
-def generate_type8_factorization():
+def generate_type8_fexpansion():
     """음수가 섞인 (x+a)(x+b)(x+c) 인수분해"""
     pool = [i for i in range(-5, 6) if i != 0] # [-3, -2, -1, 1, 2, 3]
     vals = random.sample(pool, 3)
