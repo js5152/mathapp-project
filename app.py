@@ -98,24 +98,22 @@ def make_problem(option, is_factor):
         return None 
 
 # --- 여기서부터 handle_answer를 새로 추가 ---
-def handle_answer(user_choice, current_problem, option, is_factor):
-    """학생이 보기를 클릭했을 때 실행되는 판정 함수"""
-    if user_choice == current_problem["latex_answer"]:
+def handle_answer(user_choice):
+    if user_choice == problem["latex_answer"]:
         append_log("정답")
         st.session_state.correct_count += 1
         st.session_state.wrong_count = 0
-        st.session_state.show_answer = False
-        # [중요] 정답일 때 '새로운 문제'를 세션에 저장
         st.session_state.current_problem = make_problem(option, is_factor)
         st.success("정답입니다! 🎉")
-        st.rerun() 
+        st.rerun()
     else:
         st.session_state.wrong_count += 1
         append_log(f"오답({st.session_state.wrong_count}차)")
+        
+        # [수정] 3번 틀렸을 때만 '정답 공개 모드'로 진입
         if st.session_state.wrong_count >= 3:
             st.session_state.show_answer = True
-        # 오답일 때는 즉시 상태를 반영해서 화면에 '오답'과 '영상'을 띄우기 위해 리런
-        st.rerun() 
+        st.rerun()
 
     
 # -------------------------------
@@ -235,60 +233,42 @@ if problem:
             st.rerun()
 
     # --- UI 분기: 일반 상황 vs 3번 틀린 상황 ---
-    if st.session_state.show_answer:
-        st.error(f"오답입니다! (3/3)")
-        st.warning(f"정답: $ {problem['latex_answer']} $")
+    # --- UI 분기: 오답 횟수에 따른 처리 ---
+
+# [상황 A] 3번 틀려서 정답을 공개해야 하는 상황
+if st.session_state.show_answer:
+    st.error("🚨 3회 오답: 정답을 확인하고 다음 문제로 넘어갑니다.")
+    st.info(f"✅ 정답: $ {problem['latex_answer']} $") # 정답 공개
+    
+    if st.button("확인했습니다. 다음 문제 풀기", type="primary", use_container_width=True):
+        st.session_state.show_answer = False
+        st.session_state.wrong_count = 0
+        st.session_state.current_problem = make_problem(option, is_factor)
+        st.rerun()
+
+# [상황 B] 아직 3번 미만으로 틀린 상황 (영상 노출 포함)
+else:
+    # 1. 보기 버튼들 출력
+    cols = st.columns(5)
+    for i, col in enumerate(cols):
+        with col:
+            if st.button(f"{['①','②','③','④','⑤'][i]}", key=f"btn_{i}", use_container_width=True):
+                handle_answer(choices[i])
+    
+    # 2. 1~2회 오답 시 '영상' 노출
+    if 0 < st.session_state.wrong_count < 3:
+        st.divider()
+        st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
+        st.warning("💡 아래 영상을 보면서 다시 한번 풀어보세요!")
         
+        # 영상 경로 로직
         mode_name = "인수분해" if is_factor else "전개"
-        video_path = f"media/{mode_name}_{option}.mp4"
+        video_filename = f"{mode_name}_{option}.mp4"
+        video_path = os.path.join("media", video_filename)
+
         if os.path.exists(video_path):
-            st.video(video_path)
-            st.info("💡 설명을 보고 '공부 완료' 버튼을 누르세요.")
-        
-        if st.button("공부 완료! 다음 문제 풀기", type="primary", use_container_width=True):
-            st.session_state.show_answer = False
-            st.session_state.wrong_count = 0
-            st.session_state.current_problem = make_problem(option, is_factor)
-            st.rerun()
-    else:
-        # 일반 버튼 UI
-        cols = st.columns(5)
-        for i, col in enumerate(cols):
-            with col:
-                if st.button(f"{['①','②','③','④','⑤'][i]}", key=f"btn_{i}", use_container_width=True):
-                    handle_answer(choices[i])
-        
-        # 1~2회 오답 시 메시지
-        if 0 < st.session_state.wrong_count < 3 and not st.session_state.show_answer:
-          st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
-          st.info("다시 한번 천천히 풀어보세요.")
-
-        # 3회 오답 시: 정답 공개 및 영상 출력 (최우선 순위)
-        if st.session_state.show_answer:
-            st.divider()
-            st.error("🚨 3회 오답: 아래 원리 영상을 시청하며 복습하세요!")
-            st.warning(f"정답: $ {problem['latex_answer']} $")
-    
-        # [핵심] 영상 경로 생성 및 출력
-            mode_name = "인수분해" if is_factor else "전개"
-          # 파일명에 괄호가 있으면 못 찾을 수 있으므로 안전하게 처리
-            video_filename = f"{mode_name}_{option}.mp4"
-            video_path = os.path.join("media", video_filename)
-    
-            if os.path.exists(video_path):
-             # 파일을 직접 읽어서 스트리밍하는 방식이 가장 확실합니다.
-                with open(video_path, 'rb') as f:
-                    video_bytes = f.read()
-                st.video(video_bytes)
-                st.info(f"📹 영상: {mode_name} - {option}의 원리")
-            else:
-            # 영상이 없을 경우 관리자(강사님)를 위한 디버깅 메시지
-                st.warning(f"⚠️ 아직 설명 영상이 준비되지 않았습니다. (파일명 확인용: {video_filename})")
-
-            # 공부 완료 버튼
-            if st.button("📖 원리를 이해했습니다! 다음 문제 풀기", type="primary", use_container_width=True):
-                st.session_state.show_answer = False
-                st.session_state.wrong_count = 0
-                st.session_state.current_problem = make_problem(option, is_factor)
-                st.rerun()
-
+            with open(video_path, 'rb') as f:
+                video_bytes = f.read()
+            st.video(video_bytes)
+        else:
+            st.info("⚠️ 설명 영상이 준비 중입니다. 스스로 다시 한 번 계산해 보세요!")
