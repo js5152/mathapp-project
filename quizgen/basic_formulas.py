@@ -279,8 +279,14 @@ def generate_type6_factorization():
 
 # 5번 공식: (a+b+c)^2
 def generate_type7_expansion():
-    """(a + b + c)^2 전개"""
-    expr = (a + b + x)**2 # 변수는 섞어서 사용 가능
+    """(a + b + c)^2 변형 전개 (숫자 포함)"""
+    # 1에서 5 사이의 랜덤한 숫자 3개를 뽑습니다.
+    # 만약 문자로만 하고 싶으시면 이 단계를 건너뛰지만, 보통 문제는 숫자가 섞여야 제맛이죠!
+    v = [random.randint(1, 5) for _ in range(3)]
+    
+    # 예: (x + 2y + 3z)^2 같은 느낌으로 만들려면
+    expr = (v[0]*x + v[1]*y + v[2]*z)**2 
+    
     expanded = expand(expr)
     return {
         "latex_question": latex(expr),
@@ -291,20 +297,28 @@ def generate_type7_expansion():
 
 def generate_type7_factorization():
     """a^2+b^2+c^2+2ab+2bc+2ca -> (a+b+c)^2 인수분해"""
-    expr = (a + b + x)**2
+    # 숫자가 너무 크면 계산하기 힘드니 1~4 정도로 섞어줍니다.
+    v = random.sample(range(1, 5), 3) 
+    
+    # (x + 2y + 3z)^2 같은 형태를 만듭니다.
+    # 문자를 x, y, z로 고정하거나 강사님 스타일대로 섞으시면 됩니다.
+    expr = (v[0]*x + v[1]*y + v[2]*z)**2 
     expanded = expand(expr)
+    
     return {
-        "latex_question": latex(expanded),
+        "latex_question": latex(expanded), # 펼쳐진 식을 문제로!
         "answer_obj": expr,
-        "latex_answer": latex(expr),
+        "latex_answer": latex(expr),       # 묶인 식을 정답으로!
         "expanded_obj": expanded,
         "choices": generate_choices(expr)
     }
 
 # 8번 공식: (x+a)(x+b)(x+c)
 def generate_type8_expansion():
-    """(x+a)(x+b)(x+c) 전개"""
-    vals = [random.randint(1, 3) for _ in range(3)]
+    """(x+a)(x+b)(x+c) 전개 (중복 없는 숫자)"""
+    # 1~9 사이의 숫자 중 '중복 없이' 3개를 한꺼번에 뽑습니다.
+    vals = random.sample(range(1, 10), 3) 
+    
     expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
     expanded = expand(expr)
     return {
@@ -313,14 +327,18 @@ def generate_type8_expansion():
         "latex_answer": latex(expanded),
         "choices": generate_choices(expanded)
     }
+
 # -------------------------------
 # 8. (x+a)(x+b)(x+c) 인수분해
 # -------------------------------
 def generate_type8_factorization():
     """x^3 + (a+b+c)x^2 + ... -> (x+a)(x+b)(x+c) 인수분해"""
-    vals = [random.randint(1, 3) for _ in range(3)]
+    # 1~5 사이에서 중복 없이 3개 추출 (예: 1, 3, 5)
+    vals = random.sample(range(1, 6), 3)
+    
     expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
     expanded = expand(expr)
+    
     return {
         "latex_question": latex(expanded),
         "answer_obj": expr,
