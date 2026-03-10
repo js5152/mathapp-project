@@ -315,7 +315,25 @@ def generate_type7_factorization():
 
 # 8번 공식: (x+a)(x+b)(x+c)
 def generate_type8_expansion():
-    """음수가 섞인 (x+a)(x+b)(x+c) 인수분해"""
+    """(x+a)(x+b)(x+c) 전개 (중복 없는 숫자)"""
+    pool = [i for i in range(-5, 6) if i != 0] # [-3, -2, -1, 1, 2, 3]
+    vals = random.sample(pool, 3)
+    
+    expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
+    expanded = expand(expr)
+    return {
+        "latex_question": latex(expr),
+        "answer_obj": expanded,
+        "latex_answer": latex(expanded),
+        "choices": generate_choices(expanded)
+    }
+
+
+# -------------------------------
+# 8. (x+a)(x+b)(x+c) 인수분해
+# -------------------------------
+def generate_type8_factorization():
+   """음수가 섞인 (x+a)(x+b)(x+c) 인수분해"""
     pool = [i for i in range(-5, 6) if i != 0] # [-3, -2, -1, 1, 2, 3]
     vals = random.sample(pool, 3)
     
@@ -330,25 +348,6 @@ def generate_type8_expansion():
         "choices": generate_choices(expr)
     }
 
-
-# -------------------------------
-# 8. (x+a)(x+b)(x+c) 인수분해
-# -------------------------------
-def generate_type8_factorization():
-    """x^3 + (a+b+c)x^2 + ... -> (x+a)(x+b)(x+c) 인수분해"""
-    # 1~5 사이에서 중복 없이 3개 추출 (예: 1, 3, 5)
-    vals = random.sample(range(1, 6), 3)
-    
-    expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
-    expanded = expand(expr)
-    
-    return {
-        "latex_question": latex(expanded),
-        "answer_obj": expr,
-        "latex_answer": latex(expr),
-        "expanded_obj": expanded,
-        "choices": generate_choices(expr)
-    }
 
 # 9번 공식: (a^2+ab+b^2)(a^2-ab+b^2)
 def generate_type9_expansion():
