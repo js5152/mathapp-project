@@ -97,6 +97,17 @@ def make_problem(option, is_factor):
         st.warning(f"아직 {option}의 인수분해 함수({target_func_name})가 준비되지 않았습니다.")
         return None 
 
+def display_math_video(filename, description):
+    """영상을 읽어와서 출력하는 공용 함수"""
+    video_path = os.path.join("media", filename)
+    if os.path.exists(video_path):
+        with open(video_path, 'rb') as f:
+            video_bytes = f.read()
+        st.video(video_bytes)
+        st.info(description)
+    else:
+        st.warning(f"⚠️ {filename} 영상 파일이 아직 업로드되지 않았습니다.")
+
 
     
 # -------------------------------
@@ -277,4 +288,32 @@ elif main_menu == "📐 삼각함수 영상":
         "각도(deg)": ["0°", "30°", "45°", "60°", "90°"],
         "호도법(rad)": ["0", "π/6", "π/4", "π/3", "π/2"],
         "sin 값": ["0", "1/2", "√2/2", "√3/2", "1"]
+    })
+elif main_menu == "📐 삼각함수 영상":
+    st.title("삼각함수 원리 학습")
+    
+    # 1. 어떤 영상을 볼지 선택하는 탭 생성
+    tab1, tab2, tab3 = st.tabs(["사인(sin)", "코사인(cos)", "탄젠트(tan)"])
+    
+    with tab1:
+        st.subheader("사인($\\sin$): 높이($y$좌표)의 변화")
+        display_math_video("SinSpecialAngles.mp4", "사인($\\sin$)은 단위 원 위 점의 **y좌표(높이)**입니다.")
+
+    with tab2:
+        st.subheader("코사인($\\cos$): 밑변($x$좌표)의 변화")
+        display_math_video("CosSpecialAngles.mp4", "코사인($\\cos$)은 단위 원 위 점의 **x좌표(가로 길이)**입니다.")
+
+    with tab3:
+        st.subheader("탄젠트($\\tan$): 기울기의 변화")
+        display_math_video("TanSpecialAngles.mp4", "탄젠트($\\tan$)는 동경의 **기울기**이며, 접선($x=r$)에서의 높이와 같습니다.")
+
+    st.divider()
+    
+    # 공통 보조 자료 (표 등)
+    st.markdown("### 💡 특수각 삼각비 요약")
+    st.table({
+        "각도(deg)": ["0°", "30°", "45°", "60°", "90°"],
+        "sin": ["0", "1/2", "√2/2", "√3/2", "1"],
+        "cos": ["1", "√3/2", "√2/2", "1/2", "0"],
+        "tan": ["0", "√3/3", "1", "√3", "정의불가"]
     })
