@@ -252,30 +252,46 @@ if main_menu == "🧩 공식 연습":
                     st.video(video_bytes)
 
 
+# (앞부분 생략: if main_menu == "🧩 공식 연습" 블록이 끝난 지점부터...)
+
 elif main_menu == "📐 삼각함수 영상":
     st.title("삼각함수 원리 학습")
+    st.info("단위 원 위에서 동경이 회전할 때, 각 삼각함수의 기하학적 의미를 관찰해 보세요.")
     
-    # 1. 어떤 영상을 볼지 선택하는 탭 생성
+    # 1. 탭을 이용하여 메뉴 구성
     tab1, tab2, tab3 = st.tabs(["사인(sin)", "코사인(cos)", "탄젠트(tan)"])
     
     with tab1:
         st.subheader("사인($\\sin$): 높이($y$좌표)의 변화")
-        display_math_video("SinSpecialAngles.mp4", "사인($\\sin$)은 단위 원 위 점의 **y좌표(높이)**입니다.")
+        display_math_video("SinSpecialAngles.mp4", "사인($\\sin$)은 단위 원 위 점의 **y좌표(높이)**와 같습니다.")
+        st.markdown("""
+        * **1, 2사분면:** 높이가 위쪽에 있으므로 **양수(+)**
+        * **3, 4사분면:** 높이가 아래쪽에 있으므로 **음수(-)**
+        """)
 
     with tab2:
-        st.subheader("코사인($\\cos$): 밑변($x$좌표)의 변화")
-        display_math_video("CosSpecialAngles.mp4", "코사인($\\cos$)은 단위 원 위 점의 **x좌표(가로 길이)**입니다.")
+        st.subheader("코사인($\\cos$): 가로($x$좌표)의 변화")
+        display_math_video("CosSpecialAngles.mp4", "코사인($\\cos$)은 단위 원 위 점의 **x좌표(밑변의 길이)**와 같습니다.")
+        st.markdown("""
+        * **1, 4사분면:** 점이 오른쪽에 있으므로 **양수(+)**
+        * **2, 3사분면:** 점이 왼쪽에 있으므로 **음수(-)**
+        """)
 
     with tab3:
-        st.subheader("탄젠트($\\tan$): 기울기의 변화")
-        display_math_video("TanSpecialAngles.mp4", "탄젠트($\\tan$)는 동경의 **기울기**이며, 접선($x=r$)에서의 높이와 같습니다.")
+        st.subheader("탄젠트($\\tan$): 기울기와 접선의 높이")
+        display_math_video("TanSpecialAngles.mp4", "탄젠트($\\tan$)는 동경의 **기울기**이며, $x=r$ 접선과 만나는 높이입니다.")
+        st.markdown("""
+        * **1, 3사분면:** 직선의 기울기가 오른쪽 위 방향이므로 **양수(+)**
+        * **2, 4사분면:** 직선의 기울기가 오른쪽 아래 방향이므로 **음수(-)**
+        """)
 
     st.divider()
     
-    # 공통 보조 자료 (표 등)
+    # 2. 공통 학습 자료 (특수각 요약 표)
     st.markdown("### 💡 특수각 삼각비 요약")
     st.table({
         "각도(deg)": ["0°", "30°", "45°", "60°", "90°"],
+        "호도법(rad)": ["0", "π/6", "π/4", "π/3", "π/2"],
         "sin": ["0", "1/2", "√2/2", "√3/2", "1"],
         "cos": ["1", "√3/2", "√2/2", "1/2", "0"],
         "tan": ["0", "√3/3", "1", "√3", "정의불가"]
