@@ -97,23 +97,6 @@ def make_problem(option, is_factor):
         st.warning(f"아직 {option}의 인수분해 함수({target_func_name})가 준비되지 않았습니다.")
         return None 
 
-# --- 여기서부터 handle_answer를 새로 추가 ---
-def handle_answer(user_choice):
-    if user_choice == problem["latex_answer"]:
-        append_log("정답")
-        st.session_state.correct_count += 1
-        st.session_state.wrong_count = 0
-        st.session_state.current_problem = make_problem(option, is_factor)
-        st.success("정답입니다! 🎉")
-        st.rerun()
-    else:
-        st.session_state.wrong_count += 1
-        append_log(f"오답({st.session_state.wrong_count}차)")
-        
-        # [수정] 3번 틀렸을 때만 '정답 공개 모드'로 진입
-        if st.session_state.wrong_count >= 3:
-            st.session_state.show_answer = True
-        st.rerun()
 
     
 # -------------------------------
@@ -137,7 +120,7 @@ if not st.session_state.logged_in:
     input_name = st.text_input("이름")
     input_pw = st.text_input("비밀번호", type="password")
     if st.button("로그인", use_container_width=True):
-        df_users = conn.read(worksheet="users", ttl=0)
+        df_users = conn.read(worksheet="users", ttl=300)
         in_n = normalize_login_data(input_name)
         in_p = normalize_login_data(input_pw)
         matched = df_users[
@@ -152,123 +135,132 @@ if not st.session_state.logged_in:
             st.error("이름 또는 비밀번호가 틀렸습니다.")
     st.stop()
 
+# (앞부분 import 및 유틸리티 함수, 로그인 UI까지는 그대로 두시고)
 # -------------------------------
-# 5. 메인 UI 및 문제 풀이
+# 5. 사이드바 메인 컨트롤러 (메인 메뉴 결정)
 # -------------------------------
-st.title("곱셈 / 인수분해 공식 연습")
-
 with st.sidebar:
     st.write(f"👤 **{st.session_state.user_name}** 학생")
     if st.button("로그아웃"):
         st.session_state.clear()
         st.rerun()
     st.divider()
-  # 1)메뉴선택
-option = st.selectbox("연습할 공식을 선택하세요:", ("완전제곱식", "합차공식", "(x+a)(x+b)", "(ax+b)(cx+d)", "삼차식(세제곱)", "삼차식(합차변형)", "항3개제곱", "삼차식전개", "복이차식꼴", "세항의삼차공식"))
-  # 2)인수분해 체크박스 추가
-is_factor = st.checkbox("🧩 인수분해 문제로 풀기 (체크 해제 시 전개 연습)")
-
-  # 3)상태 변경 감지 (옵션이 바뀌거나, 체크박스 상태가 바뀌면 문제 새로 생성)
-  # 식별자를 '메뉴이름+체크상태'로 만들어서 변화를 감지합니다.
-current_state_key = f"{option}_{is_factor}"
-
-if st.session_state.current_type != current_state_key:
-    st.session_state.current_type = current_state_key
-    # 이제 make_problem에 is_factor(True/False)를 같이 넘겨줍니다.
-    st.session_state.current_problem = make_problem(option, is_factor)
-    st.session_state.correct_count = 0
-    st.session_state.wrong_count = 0
-    st.session_state.show_answer = False
-    st.rerun()
-
-# --- 10문제 완료 체크 ---
-if st.session_state.correct_count >= 10:
-    st.balloons()
-    st.success(f"🎊 대단합니다! {st.session_state.user_name} 학생, 10문제를 모두 맞혔습니다! 🎊")
-    if st.button("다시 처음부터 도전하기", type="primary", use_container_width=True):
-        st.session_state.correct_count = 0
-        st.rerun()
-    st.stop()
-
-problem = st.session_state.current_problem
-if problem:
-    st.markdown("### 문제")
-    st.latex(problem["latex_question"])
-    st.progress(st.session_state.correct_count/10, text=f"현재 {st.session_state.correct_count}/10 문제 성공")
-
-    # --- 보기 출력 (정렬된 수식 버전) ---
-    st.write("정답을 고르세요:")
-    choices = problem["choices"]
     
-    # LaTeX 정렬 버전입니다.
-    st.markdown(f"$\quad ① \enspace {choices[0]}$")
-    st.write("")
-    st.markdown(f"$\quad ② \enspace {choices[1]}$")
-    st.write("")
-    st.markdown(f"$\quad ③ \enspace {choices[2]}$")
-    st.write("")
-    st.markdown(f"$\quad ④ \enspace {choices[3]}$")
-    st.write("")
-    st.markdown(f"$\quad ⑤ \enspace {choices[4]}$") # 👈 추가!
-    st.write("")
+    # 👈 여기서 메뉴를 결정합니다.
+    main_menu = st.radio(
+        "📂 학습 메뉴 선택",
+        ["🧩 공식 연습", "📐 삼각함수 영상"]
+    )
 
-    # --- 정답 처리 로직 ---
-    def handle_answer(user_choice):
-        if user_choice == problem["latex_answer"]:
-            append_log("정답")
-            st.session_state.correct_count += 1
-            st.session_state.wrong_count = 0
-            
-            # 🚩 여기를 수정하세요! (is_factor 추가)
-            st.session_state.current_problem = make_problem(option, is_factor)
-            
-            st.success("정답입니다! 🎉")
-            st.rerun()
+# -------------------------------
+# 6. 메뉴별 화면 분기
+# -------------------------------
 
-        else:
-            st.session_state.wrong_count += 1
-            append_log(f"오답({st.session_state.wrong_count}차)")
-            if st.session_state.wrong_count >= 3:
-                st.session_state.show_answer = True
-            st.rerun()
-
-    # --- UI 분기: 일반 상황 vs 3번 틀린 상황 ---
-    # --- UI 분기: 오답 횟수에 따른 처리 ---
-
-# [상황 A] 3번 틀려서 정답을 공개해야 하는 상황
-if st.session_state.show_answer:
-    st.error("🚨 3회 오답: 정답을 확인하고 다음 문제로 넘어갑니다.")
-    st.info(f"✅ 정답: $ {problem['latex_answer']} $") # 정답 공개
+if main_menu == "🧩 공식 연습":
+    st.title("곱셈 / 인수분해 공식 연습")
     
-    if st.button("확인했습니다. 다음 문제 풀기", type="primary", use_container_width=True):
-        st.session_state.show_answer = False
-        st.session_state.wrong_count = 0
+    with st.sidebar:
+        st.subheader("연습 설정")
+        option = st.selectbox("연습할 공식:", ("완전제곱식", "합차공식", "(x+a)(x+b)", "(ax+b)(cx+d)", "삼차식(세제곱)", "삼차식(합차변형)", "항3개제곱", "삼차식전개", "복이차식꼴", "세항의삼차공식"))
+        is_factor = st.checkbox("🧩 인수분해 문제로 풀기 (체크 해제 시 전개 연습)")
+
+    current_state_key = f"{option}_{is_factor}"
+
+    if st.session_state.current_type != current_state_key:
+        st.session_state.current_type = current_state_key
         st.session_state.current_problem = make_problem(option, is_factor)
+        st.session_state.correct_count = 0
+        st.session_state.wrong_count = 0
+        st.session_state.show_answer = False
         st.rerun()
 
-# [상황 B] 아직 3번 미만으로 틀린 상황 (영상 노출 포함)
-else:
-    # 1. 보기 버튼들 출력
-    cols = st.columns(5)
-    for i, col in enumerate(cols):
-        with col:
-            if st.button(f"{['①','②','③','④','⑤'][i]}", key=f"btn_{i}", use_container_width=True):
-                handle_answer(choices[i])
-    
-    # 2. 1~2회 오답 시 '영상' 노출
-    if 0 < st.session_state.wrong_count < 3:
-        st.divider()
-        st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
-        st.warning("💡 아래 영상을 보면서 다시 한번 풀어보세요!")
-        
-        # 영상 경로 로직
-        mode_name = "인수분해" if is_factor else "전개"
-        video_filename = f"{mode_name}_{option}.mp4"
-        video_path = os.path.join("media", video_filename)
+    # 10문제 완료 체크
+    if st.session_state.correct_count >= 10:
+        st.balloons()
+        st.success(f"🎊 대단합니다! {st.session_state.user_name} 학생, 10문제를 모두 맞혔습니다! 🎊")
+        if st.button("다시 처음부터 도전하기", type="primary", use_container_width=True):
+            st.session_state.correct_count = 0
+            st.rerun()
+        st.stop()
 
-        if os.path.exists(video_path):
-            with open(video_path, 'rb') as f:
-                video_bytes = f.read()
-            st.video(video_bytes)
+    problem = st.session_state.current_problem
+    if problem:
+        st.markdown("### 문제")
+        st.latex(problem["latex_question"])
+        st.progress(st.session_state.correct_count/10, text=f"현재 {st.session_state.correct_count}/10 문제 성공")
+
+        st.write("정답을 고르세요:")
+        choices = problem["choices"]
+        
+        for i, choice in enumerate(choices):
+            st.markdown(f"$\quad {['①','②','③','④','⑤'][i]} \enspace {choice}$")
+        st.write("")
+
+        # 내부 정답 처리 함수 (들여쓰기 주의)
+        def handle_answer_internal(user_choice):
+            if user_choice == problem["latex_answer"]:
+                append_log("정답")
+                st.session_state.correct_count += 1
+                st.session_state.wrong_count = 0
+                st.session_state.current_problem = make_problem(option, is_factor)
+                st.success("정답입니다! 🎉")
+                st.rerun()
+            else:
+                st.session_state.wrong_count += 1
+                append_log(f"오답({st.session_state.wrong_count}차)")
+                if st.session_state.wrong_count >= 3:
+                    st.session_state.show_answer = True
+                st.rerun()
+
+        # UI 분기
+        if st.session_state.show_answer:
+            st.error("🚨 3회 오답: 정답을 확인하고 다음 문제로 넘어갑니다.")
+            st.warning(f"정답: $ {problem['latex_answer']} $")
+            if st.button("확인했습니다. 다음 문제 풀기", type="primary", use_container_width=True):
+                st.session_state.show_answer = False
+                st.session_state.wrong_count = 0
+                st.session_state.current_problem = make_problem(option, is_factor)
+                st.rerun()
         else:
-            st.info("⚠️ 설명 영상이 준비 중입니다. 스스로 다시 한 번 계산해 보세요!")
+            cols = st.columns(5)
+            for i, col in enumerate(cols):
+                with col:
+                    if st.button(f"{['①','②','③','④','⑤'][i]}", key=f"btn_{i}", use_container_width=True):
+                        handle_answer_internal(choices[i])
+            
+            if 0 < st.session_state.wrong_count < 3:
+                st.divider()
+                st.error(f"오답입니다! ({st.session_state.wrong_count}/3)")
+                st.warning("💡 아래 영상을 보면서 다시 한번 풀어보세요!")
+                mode_name = "인수분해" if is_factor else "전개"
+                video_filename = f"{mode_name}_{option}.mp4"
+                video_path = os.path.join("media", video_filename)
+                if os.path.exists(video_path):
+                    with open(video_path, 'rb') as f:
+                        video_bytes = f.read()
+                    st.video(video_bytes)
+
+elif main_menu == "📐 삼각함수 영상":
+    st.title("삼각함수 특수각 원리")
+    st.subheader("사인($\\sin$) 값의 변화 관찰하기")
+    st.info("동경이 회전함에 따라 수선(y좌표)의 길이가 어떻게 변하는지 확인해보세요.")
+    
+    video_path = os.path.join("media", "SinSpecialAngles.mp4")
+    if os.path.exists(video_path):
+        with open(video_path, 'rb') as f:
+            video_bytes = f.read()
+        st.video(video_bytes)
+    else:
+        st.warning("⚠️ 아직 설명 영상이 업로드되지 않았습니다.")
+        
+    st.divider()
+    st.markdown("""
+    ### 💡 핵심 포인트
+    1. **사인($\\sin$)**은 단위 원 위 점의 **y좌표(높이)**와 같습니다.
+    2. 동경이 1, 2사분면에 있을 때는 **양수(+)**, 3, 4사분면에 있을 때는 **음수(-)**입니다.
+    """)
+    st.table({
+        "각도(deg)": ["0°", "30°", "45°", "60°", "90°"],
+        "호도법(rad)": ["0", "π/6", "π/4", "π/3", "π/2"],
+        "sin 값": ["0", "1/2", "√2/2", "√3/2", "1"]
+    })
