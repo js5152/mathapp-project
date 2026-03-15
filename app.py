@@ -251,44 +251,7 @@ if main_menu == "🧩 공식 연습":
                         video_bytes = f.read()
                     st.video(video_bytes)
 
-elif main_menu == "📐 삼각함수 영상":
-    st.title("삼각함수 특수각 원리")
-    st.subheader("사인($\\sin$) 값의 변화 관찰하기")
-    st.info("동경이 회전함에 따라 수선(y좌표)의 길이가 어떻게 변하는지 확인해보세요.")
-    
-    # ⭐ 핵심: 마님 애니메이션 출력 구간
-    # 1. 파일 이름 정의 (코랩에서 다운로드한 파일명과 똑같이!)
-    video_filename = "SinSpecialAngles.mp4" 
-    
-    # 2. 파일 경로 생성 (media/ 폴더 안에 있다고 가정)
-    video_path = os.path.join("media", video_filename)
-    
-    # 3. 파일이 실제로 존재하는지 확인 후 출력
-    if os.path.exists(video_path):
-        # 파일을 바이너리 읽기 모드('rb')로 엽니다.
-        with open(video_path, 'rb') as f:
-            video_bytes = f.read()
-        
-        # streamlit의 비디오 플레이어로 재생 (제일 깔끔한 방식)
-        st.video(video_bytes)
-        st.caption(f"📹 영상: {video_filename} (단위 원과 사인 값의 관계)")
-        
-    else:
-        # 파일이 없을 경우 강사님을 위한 디버깅 메시지
-        st.warning(f"⚠️ 아직 설명 영상이 업로드되지 않았습니다. (파일명 확인: {video_path})")
-        st.info("💡 코랩에서 만든 mp4 파일을 다운로드해서 깃허브의 media/ 폴더에 'Push' 해주세요.")
-        
-    st.divider()
-    st.markdown("""
-    ### 💡 핵심 포인트
-    1. **사인($\\sin$)**은 단위 원 위 점의 **y좌표(높이)**와 같습니다.
-    2. 동경이 1, 2사분면에 있을 때는 **양수(+)**, 3, 4사분면에 있을 때는 **음수(-)**입니다.
-    """)
-    st.table({
-        "각도(deg)": ["0°", "30°", "45°", "60°", "90°"],
-        "호도법(rad)": ["0", "π/6", "π/4", "π/3", "π/2"],
-        "sin 값": ["0", "1/2", "√2/2", "√3/2", "1"]
-    })
+
 elif main_menu == "📐 삼각함수 영상":
     st.title("삼각함수 원리 학습")
     
