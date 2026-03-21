@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 # -------------------------------
-# 1. 특수각 정의 (호도법 + LaTeX)
+# 1. 특수각 정의 (0 ~ 2pi 전 범위 확장)
 # -------------------------------
 ANGLES = [
     (0, r"0"),
@@ -14,48 +14,39 @@ ANGLES = [
     (3*np.pi/4, r"\frac{3\pi}{4}"),
     (5*np.pi/6, r"\frac{5\pi}{6}"),
     (np.pi, r"\pi"),
-    (3*np.pi/2, r"\frac{3\pi}{2}")
+    (7*np.pi/6, r"\frac{7\pi}{6}"),   # 3사분면 추가
+    (5*np.pi/4, r"\frac{5\pi}{4}"),   # 3사분면 추가
+    (4*np.pi/3, r"\frac{4\pi}{3}"),   # 3사분면 추가
+    (3*np.pi/2, r"\frac{3\pi}{2}"),
+    (5*np.pi/3, r"\frac{5\pi}{3}"),   # 4사분면 추가
+    (7*np.pi/4, r"\frac{7\pi}{4}"),   # 4사분면 추가
+    (11*np.pi/6, r"\frac{11\pi}{6}")  # 4사분면 추가
 ]
 
 # -------------------------------
-# 2. 정답 테이블 (LaTeX 문자열 통일)
+# 2. 정답 테이블 업데이트 (음수 부호 반영)
 # -------------------------------
 SPECIAL = {
     "sin": {
-        0: r"0",
-        np.pi/6: r"1/2",
-        np.pi/4: r"\sqrt{2}/2",
-        np.pi/3: r"\sqrt{3}/2",
-        np.pi/2: r"1",
-        2*np.pi/3: r"\sqrt{3}/2",
-        3*np.pi/4: r"\sqrt{2}/2",
-        5*np.pi/6: r"1/2",
-        np.pi: r"0",
-        3*np.pi/2: r"-1"
+        0: r"0", np.pi/6: r"1/2", np.pi/4: r"\sqrt{2}/2", np.pi/3: r"\sqrt{3}/2", np.pi/2: r"1",
+        2*np.pi/3: r"\sqrt{3}/2", 3*np.pi/4: r"\sqrt{2}/2", 5*np.pi/6: r"1/2", np.pi: r"0",
+        7*np.pi/6: r"-1/2", 5*np.pi/4: r"-\sqrt{2}/2", 4*np.pi/3: r"-\sqrt{3}/2", 3*np.pi/2: r"-1",
+        5*np.pi/3: r"-\sqrt{3}/2", 7*np.pi/4: r"-\sqrt{2}/2", 11*np.pi/6: r"-1/2"
     },
     "cos": {
-        0: r"1",
-        np.pi/6: r"\sqrt{3}/2",
-        np.pi/4: r"\sqrt{2}/2",
-        np.pi/3: r"1/2",
-        np.pi/2: r"0",
-        2*np.pi/3: r"-1/2",
-        3*np.pi/4: r"-\sqrt{2}/2",
-        5*np.pi/6: r"-\sqrt{3}/2",
-        np.pi: r"-1",
-        3*np.pi/2: r"0"
+        0: r"1", np.pi/6: r"\sqrt{3}/2", np.pi/4: r"\sqrt{2}/2", np.pi/3: r"1/2", np.pi/2: r"0",
+        2*np.pi/3: r"-1/2", 3*np.pi/4: r"-\sqrt{2}/2", 5*np.pi/6: r"-\sqrt{3}/2", np.pi: r"-1",
+        7*np.pi/6: r"-\sqrt{3}/2", 5*np.pi/4: r"-\sqrt{2}/2", 4*np.pi/3: r"-1/2", 3*np.pi/2: r"0",
+        5*np.pi/3: r"1/2", 7*np.pi/4: r"\sqrt{2}/2", 11*np.pi/6: r"\sqrt{3}/2"
     },
     "tan": {
-        0: r"0",
-        np.pi/6: r"\sqrt{3}/3",
-        np.pi/4: r"1",
-        np.pi/3: r"\sqrt{3}",
-        2*np.pi/3: r"-\sqrt{3}",
-        3*np.pi/4: r"-1",
-        5*np.pi/6: r"-\sqrt{3}/3",
-        np.pi: r"0"
+        0: r"0", np.pi/6: r"\sqrt{3}/3", np.pi/4: r"1", np.pi/3: r"\sqrt{3}",
+        2*np.pi/3: r"-\sqrt{3}", 3*np.pi/4: r"-1", 5*np.pi/6: r"-\sqrt{3}/3", np.pi: r"0",
+        7*np.pi/6: r"\sqrt{3}/3", 5*np.pi/4: r"1", 4*np.pi/3: r"\sqrt{3}",
+        5*np.pi/3: r"-\sqrt{3}", 7*np.pi/4: r"-1", 11*np.pi/6: r"-\sqrt{3}/3"
     }
 }
+
 
 # -------------------------------
 # 3. 선택지 풀 (Distractor 후보군)
