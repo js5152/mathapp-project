@@ -230,15 +230,28 @@ elif main_menu == "📝 삼각함수 퀴즈":
                 append_log(f"오답({err_type})"); st.session_state.show_answer = True; st.rerun()
 
         if st.session_state.show_answer:
-            st.error(f"🚨 정답은 ${problem['latex_answer']}$ 입니다.");
-            if st.button("다음 문제", use_container_width=True):
-                st.session_state.show_answer = False; st.session_state.current_problem = tf.generate_quiz(); st.rerun()
+            st.error(f"🚨 정답은 ${problem['latex_answer']}$ 입니다.")
+            if st.button("확인했습니다. 다음 문제", use_container_width=True):
+                st.session_state.show_answer = False
+                st.session_state.current_problem = tf.generate_quiz()
+                st.rerun()
         else:
-            choices = problem["choices"] # 보기 리스트 가져오기
+            # 1. 보기를 위에 LaTeX로 먼저 출력 (깨짐 방지)
+            choices = problem["choices"]
+            st.write("정답을 고르세요:")
+            
+            # 한 줄에 보기 하나씩 깔끔하게 수식으로 보여줌
+            for i, choice in enumerate(choices):
+                st.markdown(f"$\quad {['①','②','③','④','⑤'][i]} \enspace {choice}$")
+            
+            st.write("") # 간격 조절
+
+            # 2. 버튼은 번호만 가로로 배치
             cols = st.columns(5)
             for i, col in enumerate(cols):
                 with col:
-                    # ✅ 버튼 텍스트에 번호와 수식을 같이 넣어줍니다.
-                    button_label = f"{['①','②','③','④','⑤'][i]} {choices[i]}"
-                    if st.button(button_label, key=f"trig_btn_{i}_{problem['latex_question']}", use_container_width=True):
+                    # 버튼 안에는 수식 없이 번호만 넣어서 깔끔하게!
+                    if st.button(f"{['①','②','③','④','⑤'][i]}", 
+                                 key=f"trig_btn_{i}_{problem['latex_question']}", 
+                                 use_container_width=True):
                         handle_trig(choices[i])
