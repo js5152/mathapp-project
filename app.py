@@ -234,8 +234,11 @@ elif main_menu == "📝 삼각함수 퀴즈":
             if st.button("다음 문제", use_container_width=True):
                 st.session_state.show_answer = False; st.session_state.current_problem = tf.generate_quiz(); st.rerun()
         else:
+            choices = problem["choices"] # 보기 리스트 가져오기
             cols = st.columns(5)
             for i, col in enumerate(cols):
                 with col:
-                    if st.button(f"{['①','②','③','④','⑤'][i]}", key=f"trig_btn_{i}_{problem['latex_question']}", use_container_width=True):
-                        handle_trig(problem["choices"][i])
+                    # ✅ 버튼 텍스트에 번호와 수식을 같이 넣어줍니다.
+                    button_label = f"{['①','②','③','④','⑤'][i]} {choices[i]}"
+                    if st.button(button_label, key=f"trig_btn_{i}_{problem['latex_question']}", use_container_width=True):
+                        handle_trig(choices[i])
