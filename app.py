@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 try:
     from quizgen import basic_formulas as bf
-    from quizgen import trig_quiz_final as tf 
+    from quizgen import trig_quiz as tf 
 except ImportError:
     st.error("quizgen 모듈을 찾을 수 없습니다. 폴더 구조를 확인해주세요.")
     st.stop()
