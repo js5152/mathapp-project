@@ -409,12 +409,12 @@ def generate_type10_expansion():
         expr = (x + y + z) * (x**2 + y**2 + z**2 - x*y - y*z - z*x)
     elif case == "xy_const":
         # 패턴 2: 문자 2개 + 상수 (x, y, 1 or 2)
-        k = random.choice([1, 2])
+        k = random.randint(-2, 3)
         expr = (x + y + k) * (x**2 + y**2 + k**2 - x*y - k*y - k*x)
     else:
         # 패턴 3: 계수 2가 x, y, z 중 랜덤한 한 곳에 붙음
         coeffs = [1, 1, 1]
-        target_idx = random.randint(0, 2)
+        target_idx = random.randint(-2, 3)
         coeffs[target_idx] = 2  # 랜덤하게 한 놈만 계수 2 당첨!
         
         c1, c2, c3 = coeffs
@@ -441,12 +441,12 @@ def generate_type10_factorization():
     if case == "xyz":
         expr = (x + y + z) * (x**2 + y**2 + z**2 - x*y - y*z - z*x)
     elif case == "xy_const":
-        k = random.choice([1, 2])
+        k = random.randint(-2, 3)
         expr = (x + y + k) * (x**2 + y**2 + k**2 - x*y - k*y - k*x)
     else:
         # 패턴 3: 계수 위치 랜덤 (인수분해용)
         coeffs = [1, 1, 1]
-        target_idx = random.randint(0, 2)
+        target_idx = random.randint(-2, 3)
         coeffs[target_idx] = 2
         
         c1, c2, c3 = coeffs
