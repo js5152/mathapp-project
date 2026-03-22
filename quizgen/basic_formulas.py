@@ -286,7 +286,7 @@ def generate_type7_expansion():
     """(a + b + c)^2 변형 전개 (숫자 포함)"""
     # 1에서 5 사이의 랜덤한 숫자 3개를 뽑습니다.
     # 만약 문자로만 하고 싶으시면 이 단계를 건너뛰지만, 보통 문제는 숫자가 섞여야 제맛이죠!
-    v = [random.randint(1, 10) for _ in range(3)]
+    v = [random.randint(1, 6) for _ in range(3)]
     
     # 예: (x + 2y + 3z)^2 같은 느낌으로 만들려면
     expr = (v[0]*x + v[1]*y + v[2]*z)**2 
@@ -302,7 +302,7 @@ def generate_type7_expansion():
 def generate_type7_factorization():
     """a^2+b^2+c^2+2ab+2bc+2ca -> (a+b+c)^2 인수분해"""
     # 숫자가 너무 크면 계산하기 힘드니 1~4 정도로 섞어줍니다.
-    v = random.sample(range(1, 10), 3) 
+    v = random.sample(range(1, 6), 3) 
     
     # (x + 2y + 3z)^2 같은 형태를 만듭니다.
     # 문자를 x, y, z로 고정하거나 강사님 스타일대로 섞으시면 됩니다.
@@ -337,7 +337,7 @@ def generate_type8_expansion():
 
 def generate_type8_factorization():
     """음수가 섞인 (x+a)(x+b)(x+c) 인수분해"""
-    pool = [i for i in range(-5, 6) if i != 0]
+    pool = [i for i in range(-5, 5) if i != 0]
     vals = random.sample(pool, 3)
     
     expr = (x + vals[0]) * (x + vals[1]) * (x + vals[2])
@@ -353,10 +353,17 @@ def generate_type8_factorization():
 
 # 9번 공식: (a^2+ab+b^2)(a^2-ab+b^2) -> 숫자를 넣어 변형!
 def generate_type9_expansion():
-    """a^4 + a^2b^2 + b^4 형태 변형 (계수 추가)"""
-    k = random.randint(1, 6) # 계수를 랜덤하게!
-    # (a^2 + kab + k^2b^2)(a^2 - kab + k^2b^2)
-    expr = (a**2 + k*a*b + (k**2)*b**2) * (a**2 - k*a*b + (k**2)*b**2)
+    """a^4 + a^2b^2 + b^4 형태와 x^4 + x^2 + 1 형태를 랜덤하게 섞음"""
+    k = random.randint(1, 4)
+    
+    if random.random() < 0.5:
+        # 케이스 A: 문자 2개 (a, b)
+        expr = (a**2 + k*a*b + (k**2)*b**2) * (a**2 - k*a*b + (k**2)*b**2)
+    else:
+        # 케이스 B: 문자 1개 (a) + 상수 (k)
+        # (a^2 + ka + k^2)(a^2 - ka + k^2)
+        expr = (a**2 + k*a + k**2) * (a**2 - k*a + k**2)
+        
     expanded = expand(expr)
     return {
         "latex_question": latex(expr),
@@ -366,19 +373,25 @@ def generate_type9_expansion():
     }
 
 
+
 # -------------------------------
 # 9. 복이차식 꼴 인수분해 (계수 랜덤)
 # -------------------------------
 def generate_type9_factorization():
-    """a^4 + k^2*a^2b^2 + k^4*b^4 -> (a^2+kab+k^2b^2)(a^2-kab+k^2b^2)"""
-    k = random.randint(1, 6) # 숫자가 너무 크면 계산이 힘드니 1~4 권장
+    """문자 2개 버전과 문자 1개 버전을 랜덤하게 섞어 인수분해 문제 생성"""
+    k = random.randint(1, 4)
     
-    # 인수분해된 형태 (정답)
-    expr = (a**2 + k*a*b + (k**2)*b**2) * (a**2 - k*a*b + (k**2)*b**2)
+    if random.random() < 0.5:
+        # 케이스 A: 문자 2개 버전
+        expr = (a**2 + k*a*b + (k**2)*b**2) * (a**2 - k*a*b + (k**2)*b**2)
+    else:
+        # 케이스 B: 문자 1개 + 상수 버전
+        expr = (a**2 + k*a + k**2) * (a**2 - k*a + k**2)
+        
     expanded = expand(expr)
     
     return {
-        "latex_question": latex(expanded), # 문제: a^4 + k^2*a^2*b^2 + k^4*b^4
+        "latex_question": latex(expanded),
         "answer_obj": expr,
         "latex_answer": latex(expr),
         "expanded_obj": expanded,
@@ -388,10 +401,28 @@ def generate_type9_factorization():
 
 # 10번 공식: (a+b+c)(a^2+b^2+c^2-ab-bc-ca)=a^3+b^3+c^3-3abc -> 변수나 상수를 살짝 변형!
 def generate_type10_expansion():
-    """(a+b+c)(a^2+b^2+c^2-ab-bc-ca) 변형"""
-    # 단순 a, b, c 대신 x, y, 상수 하나를 섞어봅시다.
-    k = random.randint(1, 5) 
-    expr = (x + y + k) * (x**2 + y**2 + k**2 - x*y - y*k - k*x)
+    """10번 공식의 3가지 변형 패턴을 랜덤하게 생성"""
+    case = random.choice(["xyz", "xy_const", "coeff"])
+    
+    if case == "xyz":
+        # 패턴 1: 정석적인 문자 3개 (x, y, z)
+        expr = (x + y + z) * (x**2 + y**2 + z**2 - x*y - y*z - z*x)
+    elif case == "xy_const":
+        # 패턴 2: 문자 2개 + 상수 (x, y, 1 or 2)
+        k = random.choice([1, 2])
+        expr = (x + y + k) * (x**2 + y**2 + k**2 - x*y - k*y - k*x)
+    else:
+        # 패턴 3: 계수 2가 x, y, z 중 랜덤한 한 곳에 붙음
+        coeffs = [1, 1, 1]
+        target_idx = random.randint(0, 2)
+        coeffs[target_idx] = 2  # 랜덤하게 한 놈만 계수 2 당첨!
+        
+        c1, c2, c3 = coeffs
+        term1, term2, term3 = c1*x, c2*y, c3*z
+        
+        # (2x + y + z)(4x^2 + y^2 + z^2 - 2xy - yz - 2zx) 형태 자동 생성
+        expr = (term1 + term2 + term3) * (term1**2 + term2**2 + term3**2 - term1*term2 - term2*term3 - term3*term1)
+   
     expanded = expand(expr)
     return {
         "latex_question": latex(expr),
@@ -404,20 +435,36 @@ def generate_type10_expansion():
 # 10. 세 항의 삼차공식 인수분해 (상수 랜덤)
 # -------------------------------
 def generate_type10_factorization():
-    """a^3+b^3+k^3-3abk -> (a+b+k)(a^2+b^2+k^2-ab-bk-ka)"""
-    k = random.randint(1, 5) # 변수 c 대신 상수 k를 섞어주면 더 실전 같습니다.
+    """문제만 봐서는 공식인지 모르게! 변형된 식을 인수분해"""
+    case = random.choice(["xyz", "xy_const", "coeff"])
     
-    # 인수분해된 형태 (정답)
-    expr = (a + b + k) * (a**2 + b**2 + k**2 - a*b - b*k - k*a)
+    if case == "xyz":
+        expr = (x + y + z) * (x**2 + y**2 + z**2 - x*y - y*z - z*x)
+    elif case == "xy_const":
+        k = random.choice([1, 2])
+        expr = (x + y + k) * (x**2 + y**2 + k**2 - x*y - k*y - k*x)
+    else:
+        # 패턴 3: 계수 위치 랜덤 (인수분해용)
+        coeffs = [1, 1, 1]
+        target_idx = random.randint(0, 2)
+        coeffs[target_idx] = 2
+        
+        c1, c2, c3 = coeffs
+        term1, term2, term3 = c1*x, c2*y, c3*z
+        
+        # 정답: (x + 2y + z) / 문제: x^3 + 8y^3 + z^3 - 6xyz
+        expr = (term1 + term2 + term3) * (term1**2 + term2**2 + term3**2 - term1*term2 - term2*term3 - term3*term1)
+   
     expanded = expand(expr)
     
     return {
-        "latex_question": latex(expanded), # 문제: a^3 + b^3 + k^3 - 3abk 가 전개된 식
+        "latex_question": latex(expanded),
         "answer_obj": expr,
         "latex_answer": latex(expr),
         "expanded_obj": expanded,
         "choices": generate_choices(expr)
     }
+
 
 
 
