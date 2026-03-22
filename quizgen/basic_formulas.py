@@ -354,7 +354,7 @@ def generate_type8_factorization():
 # 9번 공식: (a^2+ab+b^2)(a^2-ab+b^2) -> 숫자를 넣어 변형!
 def generate_type9_expansion():
     """a^4 + a^2b^2 + b^4 형태와 x^4 + x^2 + 1 형태를 랜덤하게 섞음"""
-    k = random.randint(1, 4)
+    k = random.randint(1, 6)
     
     if random.random() < 0.5:
         # 케이스 A: 문자 2개 (a, b)
@@ -379,7 +379,7 @@ def generate_type9_expansion():
 # -------------------------------
 def generate_type9_factorization():
     """문자 2개 버전과 문자 1개 버전을 랜덤하게 섞어 인수분해 문제 생성"""
-    k = random.randint(1, 4)
+    k = random.randint(1, 6)
     
     if random.random() < 0.5:
         # 케이스 A: 문자 2개 버전
