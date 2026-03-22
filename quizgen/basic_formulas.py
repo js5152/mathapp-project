@@ -12,6 +12,7 @@ from sympy.parsing.sympy_parser import (
 x, y, z, a, b, c = symbols('x y z a b c')
 variables = [x, a, b]
 
+
 transformations = standard_transformations + (implicit_multiplication_application,)
 
 # 🚩 채점 시 필요한 단어장에 Symbol과 Number를 추가합니다.
@@ -137,8 +138,8 @@ def generate_type2_factorization():
 # 3. (x+a)(x+b)
 # -------------------------------
 def generate_type3_expansion():
-    a_val = random.randint(1, 5)
-    b_val = random.randint(1, 5)
+    a_val = random.randint(1, 15)
+    b_val = random.randint(1, 15)
     expr = (x + a_val) * (x + b_val)
     expanded = expand(expr)
     return {
@@ -149,8 +150,8 @@ def generate_type3_expansion():
     }
 
 def generate_type3_factorization():
-    a_val = random.randint(1, 5)
-    b_val = random.randint(1, 5)
+    a_val = random.randint(1, 15)
+    b_val = random.randint(1, 15)
     expr = (x + a_val) * (x + b_val)
     expanded = expand(expr)
     return {
@@ -165,10 +166,10 @@ def generate_type3_factorization():
 # 4. (ax+b)(cx+d)
 # -------------------------------
 def generate_type4_expansion():
-    a_val = random.randint(1, 5)
-    b_val = random.randint(1, 5)
-    c_val = random.randint(1, 5)
-    d_val = random.randint(1, 5)
+    a_val = random.randint(1, 12)
+    b_val = random.randint(1, 12)
+    c_val = random.randint(1, 12)
+    d_val = random.randint(1, 12)
     expr = (a_val*x + b_val) * (c_val*x + d_val)
     expanded = expand(expr)
     return {
@@ -179,10 +180,10 @@ def generate_type4_expansion():
     }
 
 def generate_type4_factorization():
-    a_val = random.randint(1, 5)
-    b_val = random.randint(1, 5)
-    c_val = random.randint(1, 5)
-    d_val = random.randint(1, 5)
+    a_val = random.randint(1, 10)
+    b_val = random.randint(1, 10)
+    c_val = random.randint(1, 10)
+    d_val = random.randint(1, 10)
     expr = (a_val*x + b_val) * (c_val*x + d_val)
     expanded = expand(expr)
     return {
@@ -196,17 +197,14 @@ def generate_type4_factorization():
 # 5. 삼차식 공식 (a+b)^3 및 (a-b)^3
 # -------------------------------
 def generate_type5_expansion():
-    """(x + a)^3 또는 (x - a)^3 전개 문제 생성"""
-    var = random.choice([x, a, b]) 
-    a_val = random.randint(1, 3) # 숫자가 커지면 복잡하므로 1~3 권장
+    # 1. 변수와 숫자 범위를 넉넉하게 잡습니다. (중복 확률을 수학적으로 낮춤)
+    var = random.choice([x, y, a, b]) # 변수를 4개로 늘림
+    a_val = random.randint(1, 15)      # 숫자를 1~15로 늘림
+    sign = random.choice([1, -1])
     
-    # + 인자 - 인자 랜덤 결정
-    if random.random() < 0.5:
-        expr = (var + a_val)**3
-    else:
-        expr = (var - a_val)**3
-        
+    expr = (var + sign * a_val)**3
     expanded = expand(expr)
+    
     return {
         "latex_question": latex(expr),
         "answer_obj": expanded,
@@ -214,30 +212,36 @@ def generate_type5_expansion():
         "choices": generate_choices(expanded)
     }
 
+
+
 # ------------------------------
 # 5. 삼차식 공식 인수분해
 # -------------------------------
 def generate_type5_factorization():
-    """x^3 + 3ax^2 + 3a^2x + a^3 -> (x + a)^3 인수분해"""
-    var = random.choice([x, a, b]) 
-    a_val = random.randint(1, 3)
-    if random.random() < 0.5:
-        expr = (var + a_val)**3
-    else:
-        expr = (var - a_val)**3
+    """(x±a)^3 인수분해 문제 (심플 & 랜덤 버전)"""
+    # 1. 변수와 숫자 범위를 넉넉하게 잡아서 중복 확률을 낮춤
+    var = random.choice([x, y, a, b]) 
+    a_val = random.randint(1, 15) # 범위를 1~15로 확대
+    sign = random.choice([1, -1])
+    
+    # (x + 3)^3 같은 인수분해된 형태가 실제 '정답' 객체가 됨
+    expr = (var + sign * a_val)**3
+    
+    # 문제를 위해 전개된 식을 미리 계산
     expanded = expand(expr)
+
     return {
-        "latex_question": latex(expanded),
-        "answer_obj": expr,
-        "latex_answer": latex(expr),
+        "latex_question": latex(expanded), # 문제: x^3 + 9x^2 + 27x + 27
+        "answer_obj": expr,                # 정답 객체: (x + 3)^3
+        "latex_answer": latex(expr),       # 정답 텍스트
         "expanded_obj": expanded,
-        "choices": generate_choices(expr)
+        "choices": generate_choices(expr)  # 객체를 넘겨서 오답 생성
     }
 
 def generate_type6_expansion():
     """(x + a)(x^2 - ax + a^2) = x^3 + a^3 형태 문제 생성"""
     var = random.choice([x, a, b])
-    a_val = random.randint(1, 4)
+    a_val = random.randint(1, 10)
     
     if random.random() < 0.5:
         # x^3 + a^3 공식
@@ -259,7 +263,7 @@ def generate_type6_expansion():
 def generate_type6_factorization():
     """x^3 + a^3 -> (x + a)(x^2 - ax + a^2) 인수분해"""
     var = random.choice([x, a, b])
-    a_val = random.randint(1, 4)
+    a_val = random.randint(1, 10)
     if random.random() < 0.5:
         expr = (var + a_val) * (var**2 - a_val*var + a_val**2)
     else:
@@ -282,7 +286,7 @@ def generate_type7_expansion():
     """(a + b + c)^2 변형 전개 (숫자 포함)"""
     # 1에서 5 사이의 랜덤한 숫자 3개를 뽑습니다.
     # 만약 문자로만 하고 싶으시면 이 단계를 건너뛰지만, 보통 문제는 숫자가 섞여야 제맛이죠!
-    v = [random.randint(1, 5) for _ in range(3)]
+    v = [random.randint(1, 10) for _ in range(3)]
     
     # 예: (x + 2y + 3z)^2 같은 느낌으로 만들려면
     expr = (v[0]*x + v[1]*y + v[2]*z)**2 
@@ -298,7 +302,7 @@ def generate_type7_expansion():
 def generate_type7_factorization():
     """a^2+b^2+c^2+2ab+2bc+2ca -> (a+b+c)^2 인수분해"""
     # 숫자가 너무 크면 계산하기 힘드니 1~4 정도로 섞어줍니다.
-    v = random.sample(range(1, 5), 3) 
+    v = random.sample(range(1, 10), 3) 
     
     # (x + 2y + 3z)^2 같은 형태를 만듭니다.
     # 문자를 x, y, z로 고정하거나 강사님 스타일대로 섞으시면 됩니다.
@@ -347,10 +351,12 @@ def generate_type8_factorization():
         "choices": generate_choices(expr)
     }
 
-# 9번 공식: (a^2+ab+b^2)(a^2-ab+b^2)
+# 9번 공식: (a^2+ab+b^2)(a^2-ab+b^2) -> 숫자를 넣어 변형!
 def generate_type9_expansion():
-    """보기 9번 공식 전개"""
-    expr = (a**2 + a*b + b**2) * (a**2 - a*b + b**2)
+    """a^4 + a^2b^2 + b^4 형태 변형 (계수 추가)"""
+    k = random.randint(1, 6) # 계수를 랜덤하게!
+    # (a^2 + kab + k^2b^2)(a^2 - kab + k^2b^2)
+    expr = (a**2 + k*a*b + (k**2)*b**2) * (a**2 - k*a*b + (k**2)*b**2)
     expanded = expand(expr)
     return {
         "latex_question": latex(expr),
@@ -359,25 +365,33 @@ def generate_type9_expansion():
         "choices": generate_choices(expanded)
     }
 
+
 # -------------------------------
-# 9. 복이차식 꼴 인수분해
+# 9. 복이차식 꼴 인수분해 (계수 랜덤)
 # -------------------------------
 def generate_type9_factorization():
-    """a^4 + a^2b^2 + b^4 -> (a^2+ab+b^2)(a^2-ab+b^2) 인수분해"""
-    expr = (a**2 + a*b + b**2) * (a**2 - a*b + b**2)
+    """a^4 + k^2*a^2b^2 + k^4*b^4 -> (a^2+kab+k^2b^2)(a^2-kab+k^2b^2)"""
+    k = random.randint(1, 6) # 숫자가 너무 크면 계산이 힘드니 1~4 권장
+    
+    # 인수분해된 형태 (정답)
+    expr = (a**2 + k*a*b + (k**2)*b**2) * (a**2 - k*a*b + (k**2)*b**2)
     expanded = expand(expr)
+    
     return {
-        "latex_question": latex(expanded),
+        "latex_question": latex(expanded), # 문제: a^4 + k^2*a^2*b^2 + k^4*b^4
         "answer_obj": expr,
         "latex_answer": latex(expr),
         "expanded_obj": expanded,
         "choices": generate_choices(expr)
     }
 
-# 10번 공식: (a+b+c)(a^2+b^2+c^2-ab-bc-ca)
+
+# 10번 공식: (a+b+c)(a^2+b^2+c^2-ab-bc-ca)=a^3+b^3+c^3-3abc -> 변수나 상수를 살짝 변형!
 def generate_type10_expansion():
-    """보기 10번 공식 전개"""
-    expr = (a + b + x) * (a**2 + b**2 + x**2 - a*b - b*x - x*a)
+    """(a+b+c)(a^2+b^2+c^2-ab-bc-ca) 변형"""
+    # 단순 a, b, c 대신 x, y, 상수 하나를 섞어봅시다.
+    k = random.randint(1, 5) 
+    expr = (x + y + k) * (x**2 + y**2 + k**2 - x*y - y*k - k*x)
     expanded = expand(expr)
     return {
         "latex_question": latex(expr),
@@ -385,20 +399,26 @@ def generate_type10_expansion():
         "latex_answer": latex(expanded),
         "choices": generate_choices(expanded)
     }
+
 # -------------------------------
-# 10. 세 항의 삼차공식 인수분해
+# 10. 세 항의 삼차공식 인수분해 (상수 랜덤)
 # -------------------------------
 def generate_type10_factorization():
-    """a^3+b^3+c^3-3abc -> (a+b+c)(a^2+b^2+c^2-ab-bc-ca) 인수분해"""
-    expr = (a + b + x) * (a**2 + b**2 + x**2 - a*b - b*x - x*a)
+    """a^3+b^3+k^3-3abk -> (a+b+k)(a^2+b^2+k^2-ab-bk-ka)"""
+    k = random.randint(1, 5) # 변수 c 대신 상수 k를 섞어주면 더 실전 같습니다.
+    
+    # 인수분해된 형태 (정답)
+    expr = (a + b + k) * (a**2 + b**2 + k**2 - a*b - b*k - k*a)
     expanded = expand(expr)
+    
     return {
-        "latex_question": latex(expanded),
+        "latex_question": latex(expanded), # 문제: a^3 + b^3 + k^3 - 3abk 가 전개된 식
         "answer_obj": expr,
         "latex_answer": latex(expr),
         "expanded_obj": expanded,
         "choices": generate_choices(expr)
     }
+
 
 
 # -------------------------------
