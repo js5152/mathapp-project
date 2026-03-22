@@ -199,7 +199,7 @@ def generate_type4_factorization():
 def generate_type5_expansion():
     # 1. 변수와 숫자 범위를 넉넉하게 잡습니다. (중복 확률을 수학적으로 낮춤)
     var = random.choice([x, y, a, b]) # 변수를 4개로 늘림
-    a_val = random.randint(1, 15)      # 숫자를 1~15로 늘림
+    a_val = random.randint(1, 10)      # 숫자를 1~15로 늘림
     sign = random.choice([1, -1])
     
     expr = (var + sign * a_val)**3
@@ -221,7 +221,7 @@ def generate_type5_factorization():
     """(x±a)^3 인수분해 문제 (심플 & 랜덤 버전)"""
     # 1. 변수와 숫자 범위를 넉넉하게 잡아서 중복 확률을 낮춤
     var = random.choice([x, y, a, b]) 
-    a_val = random.randint(1, 15) # 범위를 1~15로 확대
+    a_val = random.randint(1, 10) # 범위를 1~15로 확대
     sign = random.choice([1, -1])
     
     # (x + 3)^3 같은 인수분해된 형태가 실제 '정답' 객체가 됨
