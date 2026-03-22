@@ -399,30 +399,29 @@ def generate_type9_factorization():
     }
 
 
-# 10번 공식: (a+b+c)(a^2+b^2+c^2-ab-bc-ca)=a^3+b^3+c^3-3abc -> 변수나 상수를 살짝 변형!
 def generate_type10_expansion():
-    """10번 공식의 3가지 변형 패턴을 랜덤하게 생성"""
     case = random.choice(["xyz", "xy_const", "coeff"])
     
+    # 각 변수나 상수의 부호를 랜덤하게 결정 (-1 또는 1)
+    s1, s2, s3 = [random.choice([1, -1]) for _ in range(3)]
+
     if case == "xyz":
-        # 패턴 1: 정석적인 문자 3개 (x, y, z)
-        expr = (x + y + z) * (x**2 + y**2 + z**2 - x*y - y*z - z*x)
+        # 패턴 1: (±x ±y ±z) 형태
+        term1, term2, term3 = s1*x, s2*y, s3*z
     elif case == "xy_const":
-        # 패턴 2: 문자 2개 + 상수 (x, y, 1 or 2)
-        k = random.randint(-2, 3)
-        expr = (x + y + k) * (x**2 + y**2 + k**2 - x*y - k*y - k*x)
+        # 패턴 2: (±x ±y ±k) 형태
+        k = random.randint(1, 3) # 숫자는 1~3으로 뽑고
+        term1, term2, term3 = s1*x, s2*y, s3*k # 부호(s3)를 곱해줌
     else:
-        # 패턴 3: 계수 2가 x, y, z 중 랜덤한 한 곳에 붙음
+        # 패턴 3: 계수 2가 붙는 위치 랜덤 + 부호 랜덤
         coeffs = [1, 1, 1]
-        target_idx = random.randint(-2, 3)
-        coeffs[target_idx] = 2  # 랜덤하게 한 놈만 계수 2 당첨!
-        
-        c1, c2, c3 = coeffs
-        term1, term2, term3 = c1*x, c2*y, c3*z
-        
-        # (2x + y + z)(4x^2 + y^2 + z^2 - 2xy - yz - 2zx) 형태 자동 생성
-        expr = (term1 + term2 + term3) * (term1**2 + term2**2 + term3**2 - term1*term2 - term2*term3 - term3*term1)
-   
+        target_idx = random.randint(0, 2) # 인덱스는 0, 1, 2만!
+        coeffs[target_idx] = 2
+        term1, term2, term3 = s1*coeffs[0]*x, s2*coeffs[1]*y, s3*coeffs[2]*z
+
+    # 공식: (A+B+C)(A^2+B^2+C^2-AB-BC-CA)
+    expr = (term1 + term2 + term3) * (term1**2 + term2**2 + term3**2 - term1*term2 - term2*term3 - term3*term1)
+    
     expanded = expand(expr)
     return {
         "latex_question": latex(expr),
@@ -431,39 +430,42 @@ def generate_type10_expansion():
         "choices": generate_choices(expanded)
     }
 
-# -------------------------------
-# 10. 세 항의 삼차공식 인수분해 (상수 랜덤)
-# -------------------------------
+
 def generate_type10_factorization():
-    """문제만 봐서는 공식인지 모르게! 변형된 식을 인수분해"""
+    """문제만 봐서는 공식인지 모르게! 부호와 계수가 뒤섞인 인수분해 문제"""
     case = random.choice(["xyz", "xy_const", "coeff"])
     
+    # 각 항의 부호를 랜덤하게 결정 (-1 또는 1)
+    s1, s2, s3 = [random.choice([1, -1]) for _ in range(3)]
+
     if case == "xyz":
-        expr = (x + y + z) * (x**2 + y**2 + z**2 - x*y - y*z - z*x)
+        # 패턴 1: (±x ±y ±z)
+        term1, term2, term3 = s1*x, s2*y, s3*z
     elif case == "xy_const":
-        k = random.randint(-2, 3)
-        expr = (x + y + k) * (x**2 + y**2 + k**2 - x*y - k*y - k*x)
+        # 패턴 2: (±x ±y ±k)
+        k = random.randint(1, 3) 
+        term1, term2, term3 = s1*x, s2*y, s3*k
     else:
-        # 패턴 3: 계수 위치 랜덤 (인수분해용)
+        # 패턴 3: 계수 2가 붙는 위치 랜덤 + 부호 랜덤
         coeffs = [1, 1, 1]
-        target_idx = random.randint(-2, 3)
+        target_idx = random.randint(0, 2) # 인덱스는 무조건 0, 1, 2!
         coeffs[target_idx] = 2
-        
-        c1, c2, c3 = coeffs
-        term1, term2, term3 = c1*x, c2*y, c3*z
-        
-        # 정답: (x + 2y + z) / 문제: x^3 + 8y^3 + z^3 - 6xyz
-        expr = (term1 + term2 + term3) * (term1**2 + term2**2 + term3**2 - term1*term2 - term2*term3 - term3*term1)
-   
+        term1, term2, term3 = s1*coeffs[0]*x, s2*coeffs[1]*y, s3*coeffs[2]*z
+
+    # 인수분해된 형태 (이게 정답 객체가 됩니다)
+    expr = (term1 + term2 + term3) * (term1**2 + term2**2 + term3**2 - term1*term2 - term2*term3 - term3*term1)
+    
+    # 문제 출제를 위해 전개합니다.
     expanded = expand(expr)
     
     return {
-        "latex_question": latex(expanded),
-        "answer_obj": expr,
+        "latex_question": latex(expanded), # 문제: x^3 - y^3 - 8 - 6xy 등
+        "answer_obj": expr,                # 정답: (x - y - 2)(x^2 + y^2 + 4 + xy - 2y + 2x)
         "latex_answer": latex(expr),
         "expanded_obj": expanded,
         "choices": generate_choices(expr)
     }
+
 
 
 
